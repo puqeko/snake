@@ -15,9 +15,9 @@ Movement
 
 Title screen
 
-- Scrolling snake letters.
+- Scrolling snake letters. (Do after other things)
 - Press button to say they are ready to start.
-- Arrow at beginning to indicate starting on other board.
+- Arrow at beginning to indicate starting on other board. (Do after other things)
 - Snakes start on the opposite board.
 - Show points.
 - Winner text.
