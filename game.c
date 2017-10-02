@@ -16,8 +16,5 @@ int main (void)
 {
     system_init ();
 
-    while (true)
-    {
 
-    }
 }
