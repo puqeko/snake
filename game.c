@@ -7,6 +7,8 @@
 #include "game.h"
 #include "display.h"
 #include "snake.h"
+#include "task.h"
+#include "ledmat.h"
 
 
 int main (void)

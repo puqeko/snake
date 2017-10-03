@@ -8,6 +8,7 @@
 #include "game.h"
 #include "display.h"
 #include "pio.h"
+#include "ledmat.h"
 
 #define LEDMAT_ROWS_NUM 7
 
@@ -36,24 +37,24 @@ void display_column (const uint8_t patternArray[], uint8_t currentColumn)
     // to take its half of the 7x10 matrix or rather, have its half of the
     // matrix passed into this function.
 
-    static uint8_t previous_column = 0;
-    uint8_t row;
+    static uint8_t previousColumn = 0;
+    uint8_t currentRow;
 
     // Disable previous column to prevent ghosting while rows modified.
-    pio_output_high (ledmatCols[previous_column]);
+    pio_output_high (ledmatCols[previousColumn]);
 
     // Activate desired rows based on desired pattern.
-    for (row = 0; row < LEDMAT_ROWS_NUM; row++) {
+    for (currentRow = 0; currentRow < LEDMAT_ROWS_NUM; currentRow++) {
 
         // The rows are active low.
-        if (patternArray[row] != SNAKE_EMPTY) {
-            pio_output_low (ledmatRows[row]);
+        if (patternArray[currentRow] != SNAKE_EMPTY) {
+            pio_output_low (ledmatRows[currentRow]);
         } else {
-            pio_output_high (ledmatRows[row]);
+            pio_output_high (ledmatRows[currentRow]);
         }
     }
 
     // Enable new column.
     pio_output_low (ledmatCols[currentColumn]);
-    previous_column = currentColumn;
+    previousColumn = currentColumn;
 }
