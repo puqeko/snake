@@ -11,7 +11,7 @@
 
 
 bool will_self_intersect(State* state)
-// Check if next a planned movement in current direction will create a
+// TODO: Check if next a planned movement in current direction will create a
 // self intersection by returing true is that is the case.
 {
     // If moving snake head in current direction will create intersect
@@ -20,7 +20,7 @@ bool will_self_intersect(State* state)
 
 
 bool will_eat_food(State* state)
-// Return true if when the snakes head moves in direction then it
+// TODO: Return true if when the snakes head moves in direction then it
 // will consume food. Boris will be happy.
 {
     // If moving snake head in current direction will create intersect
@@ -29,7 +29,7 @@ bool will_eat_food(State* state)
 
 
 void run_boris_run(State* state, bool doesEatFood)
-// Move Boris by a single position. Make him grow if he also eats food.
+// TODO: Move Boris by a single position. Make him grow if he also eats food.
 {
 
 }

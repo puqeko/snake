@@ -8,7 +8,7 @@
 
 
 // Game modes. Can add more later if necessary
-enum {
+enum GAMEMODE {
     GAMEMODE_TITLE = 0,
     GAMEMODE_SNAKE,
     GAMEMODE_END
