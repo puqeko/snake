@@ -9,6 +9,13 @@
 #include "navswitch.h"
 
 
+void input_init()
+// TODO: Confiure navswitch etc.
+{
+    
+}
+
+
 void read_navswitch_inputs(void)
 // TODO: Poll the navswitch and update the direction of the head of the snake accordingly.
 {
@@ -31,7 +38,7 @@ void get_relative_direction(State* state, int direction)
 }
 
 
-void update_input(State* state)
+void input_update(State* state)
 // TODO: Poll for navswitch and button inputs.
 {
     if (state->gameMode == GAMEMODE_SNAKE) {

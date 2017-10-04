@@ -6,6 +6,9 @@
 
 #include "system.h"
 
+// Number of elements in an array.
+#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
+
 
 // Game modes. Can add more later if necessary
 enum GAMEMODE {
@@ -29,7 +32,7 @@ enum SNAKE_CELL_TYPE {
 // x,y coordinate system
 typedef struct position_s {
     uint8_t x, y;
-} Pos;
+} Position;
 
 
 // Game state passed around to all functions.

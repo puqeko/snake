@@ -6,5 +6,8 @@
 // Editied 01-10-17
 
 
+// Set inital gameboard (starting snake)
+void snake_init(State* state);
+
 // Update the positions of the snake.
-void update_snake(State* state);
+void snake_update(State* state);

@@ -6,5 +6,9 @@
 // Editied 02-10-17
 
 
-// Poll for navswitch and button inputs 
-void update_input(State* state);
+// Initalise input settings.
+void input_init();
+
+
+// Poll for navswitch and button inputs.
+void input_update(State* state);
