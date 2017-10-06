@@ -196,7 +196,7 @@ def get_headers(c_file, file_index, headers_needed, up_next):
 
         else:
 
-            print("ERROR: Could not find '{}'.".format(file_to_find))
+            print("ERROR: Could not find '{}'.".format(include))
 
 
 
