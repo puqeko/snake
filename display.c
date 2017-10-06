@@ -65,11 +65,9 @@ void display_column(const uint8_t patternArray[], uint8_t currentColumn)
 }
 
 
-void display_update(void* data)
+void display_update(State* state)
 // Show the snake on the LED matrix.
 {
-    State* state = (State*) data;
-
     static int row = 0;  // static to remember value between updates.
     display_column(state->gameBoard[row], row);
 

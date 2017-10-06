@@ -14,6 +14,6 @@
 void input_init(void);
 
 // Poll for navswitch and button inputs.
-void input_update(void* data);
+void input_update(State* state);
 
 #endif

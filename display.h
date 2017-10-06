@@ -16,6 +16,6 @@
 void display_init(void);
 
 // Show the snake on the LED matrix
-void display_update(void* data);
+void display_update(State* state);
 
 #endif
