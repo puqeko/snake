@@ -5,7 +5,7 @@
 // By Jozef and Thomas
 // Editied 02-10-17
 
-#include "system"
+#include "system.h"
 
 #ifndef GAME_INPUT_H
 #define GAME_INPUT_H

@@ -5,7 +5,7 @@
 // By Jozef and Thomas
 // Editied 01-10-17
 
-#include "system"
+#include "system.h"
 
 #ifndef GAME_SNAKE_H
 #define GAME_SNAKE_H

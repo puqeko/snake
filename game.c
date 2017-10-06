@@ -5,9 +5,9 @@
 // Editied 01-10-17
 
 #include "game.h"
-#include "game_input.h"
-#include "game_snake.h"
-#include "game_display.h"
+#include "input.h"
+#include "snake.h"
+#include "display.h"
 #include "task.h"
 
 #define SNAKE_UPDATE_RATE (TASK_RATE / 2)

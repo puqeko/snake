@@ -6,7 +6,7 @@
 // Editied 01-10-17
 
 #include "game.h"
-#include "game_display.h"
+#include "display.h"
 #include "pio.h"
 #include "ledmat.h"
 
