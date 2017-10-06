@@ -17,34 +17,34 @@ all: game.out
 
 
 # Compile: create object files from C source files.
-game.o: ./game.c ./game.h ../../drivers/avr/system.h ../../drivers/avr/timer.h ./snake.h ../../utils/task.h ./input.h ./display.h
+game.o: ./game.c ../../drivers/avr/timer.h ../../drivers/avr/system.h ./snake.h ./input.h ./display.h ../../utils/task.h ./game.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
-task.o: ../../utils/task.c ../../utils/task.h ../../drivers/avr/system.h ../../drivers/avr/timer.h
+task.o: ../../utils/task.c ../../utils/task.h ../../drivers/avr/timer.h ../../drivers/avr/system.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
-timer.o: ../../drivers/avr/timer.c ../../drivers/avr/system.h ../../drivers/avr/timer.h
+timer.o: ../../drivers/avr/timer.c ../../drivers/avr/timer.h ../../drivers/avr/system.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
 system.o: ../../drivers/avr/system.c ../../drivers/avr/system.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
-display.o: ./display.c ./game.h ../../drivers/avr/pio.h ../../drivers/avr/system.h ../../drivers/ledmat.h ./display.h
+display.o: ./display.c ../../drivers/avr/pio.h ../../drivers/ledmat.h ../../drivers/avr/system.h ./display.h ./game.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
-ledmat.o: ../../drivers/ledmat.c ../../drivers/avr/pio.h ../../drivers/avr/system.h ../../drivers/ledmat.h
+ledmat.o: ../../drivers/ledmat.c ../../drivers/avr/pio.h ../../drivers/ledmat.h ../../drivers/avr/system.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
 pio.o: ../../drivers/avr/pio.c ../../drivers/avr/pio.h ../../drivers/avr/system.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
-snake.o: ./snake.c ./game.h ../../drivers/avr/system.h
+snake.o: ./snake.c ../../drivers/avr/system.h ./game.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
-input.o: ./input.c ./game.h ../../drivers/navswitch.h ../../drivers/avr/system.h
+input.o: ./input.c ../../drivers/navswitch.h ../../drivers/avr/system.h ./game.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
-navswitch.o: ../../drivers/navswitch.c ../../drivers/navswitch.h ../../drivers/avr/system.h ../../drivers/avr/delay.h ../../drivers/avr/pio.h
+navswitch.o: ../../drivers/navswitch.c ../../drivers/navswitch.h ../../drivers/avr/delay.h ../../drivers/avr/pio.h ../../drivers/avr/system.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
 game.out: game.o task.o timer.o system.o display.o ledmat.o pio.o snake.o input.o navswitch.o
