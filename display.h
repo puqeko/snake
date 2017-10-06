@@ -5,7 +5,7 @@
 // By Jozef and Thomas
 // Editied 01-10-17
 
-#include "system.h"
+#include "game.h"
 
 #ifndef GAME_DISPLAY_H
 #define GAME_DISPLAY_H
