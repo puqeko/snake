@@ -7,6 +7,9 @@
 
 #include "system.h"
 
+#ifndef GAME_DISPLAY_H
+#define GAME_DISPLAY_H
+
 #define LEDMAT_ROWS_NUM 7
 
 
@@ -15,3 +18,5 @@ void display_init(void);
 
 // Show the snake on the LED matrix
 void display_update(void* data);
+
+#endif

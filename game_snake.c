@@ -8,7 +8,6 @@
 // Editied 01-10-17
 
 #include "game.h"  // has stdbool
-#include "ledmat.h"
 
 
 // Set inital gameboard here.

@@ -6,6 +6,8 @@
 
 #include "system.h"
 
+#ifndef GAME_H
+#define GAME_H
 
 // Game modes. Can add more later if necessary
 enum GAMEMODE {
@@ -40,3 +42,5 @@ typedef struct state_s {
     Position snakeHead;
     Position snakeTail;
 } State;
+
+#endif

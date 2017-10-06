@@ -31,10 +31,10 @@ all: game.out
 
 
 # Compile: create object files from C source files.
-game.o: ./game.c ../../drivers/avr/pio.h ../../drivers/avr/system.h ./game.h ../../drivers/avr/timer.h ../../drivers/ledmat.h ../../utils/task.h ../../drivers/led.h
+game.o: ./game.c ./game_snake.h ./game_input.h ../../drivers/avr/timer.h ./game.h ../../utils/task.h ./game_display.h ../../drivers/avr/system.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
-task.o: ../../utils/task.c ../../drivers/avr/system.h ../../drivers/avr/timer.h ../../utils/task.h
+task.o: ../../utils/task.c ../../utils/task.h ../../drivers/avr/system.h ../../drivers/avr/timer.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
 timer.o: ../../drivers/avr/timer.c ../../drivers/avr/system.h ../../drivers/avr/timer.h
@@ -43,16 +43,25 @@ timer.o: ../../drivers/avr/timer.c ../../drivers/avr/system.h ../../drivers/avr/
 system.o: ../../drivers/avr/system.c ../../drivers/avr/system.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
-led.o: ../../drivers/led.c ../../drivers/led.h ../../drivers/avr/pio.h ../../drivers/avr/system.h
-	$(CC) -c $(CFLAGS) $< -o $@
-
-pio.o: ../../drivers/avr/pio.c ../../drivers/avr/pio.h ../../drivers/avr/system.h
+game_display.o: ./game_display.c ../../drivers/ledmat.h ./game_display.h ../../drivers/avr/pio.h ./game.h ../../drivers/avr/system.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
 ledmat.o: ../../drivers/ledmat.c ../../drivers/ledmat.h ../../drivers/avr/pio.h ../../drivers/avr/system.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
-game.out: game.o task.o timer.o system.o led.o pio.o ledmat.o
+pio.o: ../../drivers/avr/pio.c ../../drivers/avr/pio.h ../../drivers/avr/system.h
+	$(CC) -c $(CFLAGS) $< -o $@
+
+game_snake.o: ./game_snake.c ./game.h ../../drivers/avr/system.h
+	$(CC) -c $(CFLAGS) $< -o $@
+
+game_input.o: ./game_input.c ../../drivers/navswitch.h ./game.h ../../drivers/avr/system.h
+	$(CC) -c $(CFLAGS) $< -o $@
+
+navswitch.o: ../../drivers/navswitch.c ../../drivers/avr/delay.h ../../drivers/navswitch.h ../../drivers/avr/system.h ../../drivers/avr/pio.h
+	$(CC) -c $(CFLAGS) $< -o $@
+
+game.out: game.o task.o timer.o system.o game_display.o ledmat.o pio.o game_snake.o game_input.o navswitch.o
 	$(CC) $(CFLAGS) $^ -o $@ -lm
 	$(SIZE) $@
 
