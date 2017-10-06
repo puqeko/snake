@@ -15,7 +15,7 @@
 
 // display_update shows only one row at a time so we require it to run
 // LEDMAT_ROWS_NUM times at the desired frame rate of 100 Hz.
-#define DISPLAY_UPDATE_RATE (TASK_RATE / 500) //(100 * LEDMAT_ROWS_NUM)
+#define DISPLAY_UPDATE_RATE (TASK_RATE / 100 * LEDMAT_ROWS_NUM)
 
 
 int main (void)
@@ -49,7 +49,7 @@ int main (void)
             .data = &state
         }, {
             .func = (task_func_t)display_update,
-            .period = TASK_RATE / 500,
+            .period = DISPLAY_UPDATE_RATE,
             .data = &state
         }
     };
