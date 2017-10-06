@@ -28,55 +28,81 @@ static const pio_t ledmatCols[] =
 };
 
 
-void display_init()
+void display_init(void)
 // Configure LED display.
 {
     ledmat_init();
 }
 
 
-void display_column(const uint8_t patternArray[], uint8_t currentColumn)
+void display_one_column(const uint8_t patternArray[], uint8_t row)
 // Draw patternArray to the LED matrix.
 {
-    // TODO: Depending on the board this function is called by, it needs
-    // to take its half of the 7x10 matrix or rather, have its half of the
-    // matrix passed into this function.
+    static uint8_t col_prev = 0;
+    uint8_t row;
 
-    static uint8_t previousColumn = 0;
-    uint8_t currentRow;
+    /* Disable previous column to prevent ghosting while rows modified.  */
+    pio_output_high (ledmat_cols[col_prev]);
 
-    // Disable previous column to prevent ghosting while rows modified.
-    pio_output_high(ledmatCols[previousColumn]);
-
-    // Activate desired rows based on desired pattern.
-    for (currentRow = 0; currentRow < LEDMAT_ROWS_NUM; currentRow++) {
-
-        // The rows are active low.
-        if (patternArray[currentRow] != SNAKE_EMPTY) {
-            pio_output_low(ledmatRows[currentRow]);
-        } else {
-            pio_output_high(ledmatRows[currentRow]);
-        }
+    /* Activate desired rows based on desired pattern.  */
+    for (row = 0; row < LEDMAT_ROWS_NUM; row++)
+    {
+        /* The rows are active low.  */
+        if (patternArray[row] != SNAKE_EMPTY)
+            pio_output_low (ledmat_rows[row]);
+        else
+            pio_output_high (ledmat_rows[row]);
     }
 
-    // Enable new column.
-    pio_output_low(ledmatCols[currentColumn]);
-    previousColumn = currentColumn;
+    /* Enable new column.  */
+    pio_output_low (ledmat_cols[col]);
+    col_prev = col;
+    // // TODO: Depending on the board this function is called by, it needs
+    // // to take its half of the 7x10 matrix or rather, have its half of the
+    // // matrix passed into this function.
+
+    // static uint8_t previousColumn = 0;
+    // uint8_t currentRow;
+
+    // // Disable previous column to prevent ghosting while rows modified.
+    // pio_output_high(ledmatCols[previousColumn]);
+
+    // // Activate desired rows based on desired pattern.
+    // for (currentRow = 0; currentRow < LEDMAT_ROWS_NUM; currentRow++) {
+
+    //     // The rows are active low.
+    //     if (patternArray[currentRow] != SNAKE_CELL_EMPTY) {
+    //         pio_output_low(ledmatRows[currentRow]);
+    //     } else {
+    //         pio_output_high(ledmatRows[currentRow]);
+    //     }
+    // }
+
+    // // Enable new column.
+    // pio_output_low(ledmatCols[currentColumn]);
+    // previousColumn = currentColumn;
 }
 
 
-void display_update(State* state)
+void display_update(void* data)
 // Show the snake on the LED matrix.
 {
-    static int row = 0;  // static to remember value between updates.
-    display_column(state->gameBoard[row], row);
+    State* state = (State*) data;
+    static int row = 0;
 
-    // Wrap row round so that it iterates through the rows.
-    // Therefore, the true refresh rate of the display is
-    // the rate this function is called divided by the number
-    // of rows in the LED matrix.
-    row++;
-    if (row == LEDMAT_ROWS_NUM) {
-        row = 0;
-    }
+    display_column(state->gameBoard[row], row);
+    if (++row == LEDMAT_ROWS_NUM) row = 0;
+    // State* state = (State*) data;
+
+    // static int row = 0;  // static to remember value between updates.
+    // display_one_column(state->gameBoard[row], row);
+
+    // // Wrap row round so that it iterates through the rows.
+    // // Therefore, the true refresh rate of the display is
+    // // the rate this function is called divided by the number
+    // // of rows in the LED matrix.
+    // row++;
+    // if (row == LEDMAT_ROWS_NUM) {
+    //     row = 0;
+    // }
 }

@@ -6,16 +6,13 @@
 
 #include "system.h"
 
-// Number of elements in an array.
-#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
-
 
 // Game modes. Can add more later if necessary
 enum GAMEMODE {
     GAMEMODE_TITLE = 0,
     GAMEMODE_SNAKE,
     GAMEMODE_END
-}
+};
 
 
 // Used to map the snake's position and the position of food.
@@ -37,9 +34,9 @@ typedef struct position_s {
 
 // Game state passed around to all functions.
 typedef struct state_s {
-    int mode;
-    uint8_t snakeLength = 2; // Boris start's at length 2
+    int gameMode;
     uint8_t gameBoard[10][7];
-    Pos snakeHead;
-    Pos snakeTail;
+    uint8_t snakeLength;
+    Position snakeHead;
+    Position snakeTail;
 } State;

@@ -10,4 +10,4 @@
 void snake_init(State* state);
 
 // Update the positions of the snake.
-void snake_update(State* state);
+void snake_update(void* data);

@@ -7,8 +7,8 @@
 
 
 // Initalise input settings.
-void input_init();
+void input_init(void);
 
 
 // Poll for navswitch and button inputs.
-void input_update(State* state);
+void input_update(void* data);

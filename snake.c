@@ -15,9 +15,9 @@
 void snake_init(State* state)
 {
     // Initalise snake from 2, 0 to 2, 2
-    state->gameBoard[2][2] = SNAKE_UP;
-    state->gameBoard[2][1] = SNAKE_UP;
-    state->gameBoard[2][0] = SNAKE_UP;
+    state->gameBoard[2][2] = SNAKE_CELL_UP;
+    state->gameBoard[2][1] = SNAKE_CELL_UP;
+    state->gameBoard[2][0] = SNAKE_CELL_UP;
 }
 
 
@@ -53,11 +53,13 @@ void spawn_food_bit(State* state)
 }
 
 
-void snake_update (State* state)
+void snake_update(void* data)
 // Update positions of the Boris's LED dot positions. If the head
 // position moves to an existing LED point that's on,
 // Boris has intersected himself - game over. Poor Boris.
 {
+    State* state = (State*) data;
+
     if (state->gameMode == GAMEMODE_SNAKE) {
         // Check if it is valid to move the snake to a new position
         // Change gamemode to end if the next move is invalid

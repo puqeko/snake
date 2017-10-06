@@ -11,10 +11,7 @@
 
 
 // Configure LED display
-void display_init();
-
-// Draw patternArray to the LED matrix.
-void display_column (uint8_t patternArray[], uint8_t currentColumn);
+void display_init(void);
 
 // Show the snake on the LED matrix
-void display_update(State* state);
+void display_update(void* data);

@@ -9,7 +9,7 @@
 #include "navswitch.h"
 
 
-void input_init()
+void input_init(void)
 // TODO: Confiure navswitch etc.
 {
     
@@ -38,9 +38,11 @@ void get_relative_direction(State* state, int direction)
 }
 
 
-void input_update(State* state)
+void input_update(void* data)
 // TODO: Poll for navswitch and button inputs.
 {
+    State* state = (State*) data;
+
     if (state->gameMode == GAMEMODE_SNAKE) {
         // Check if it is valid to move the snake to a new position
         // Change gamemode to end if the next move is invalid
