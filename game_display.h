@@ -12,7 +12,6 @@
 
 #define LEDMAT_ROWS_NUM 7
 
-
 // Configure LED display
 void display_init(void);
 
