@@ -29,7 +29,7 @@ int main (void)
     State state = {
         .gameMode = GAMEMODE_SNAKE,
         .gameBoard = {},  // 7 x 10 array initalised to zero
-        .snakeLength = 3, // Boris start's at this length
+        .snakeLength = 3, // Boris starts at this length
         .snakeHead = {2, 2},  // Position 0, 0
         .snakeTail = {2, 0},  // Position 0, 0
     };

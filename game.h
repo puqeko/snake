@@ -37,7 +37,7 @@ typedef struct position_s {
 // Game state passed around to all functions.
 typedef struct state_s {
     int gameMode;
-    uint8_t gameBoard[10][7];
+    uint8_t gameBoard[7][10]; // 7 rows, 10 columns to be consistent with LED matrices
     uint8_t snakeLength;
     Position snakeHead;
     Position snakeTail;

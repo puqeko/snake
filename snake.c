@@ -21,7 +21,7 @@ bool will_self_intersect(State* state)
 
 bool will_eat_food(State* state)
 // Return true if when the snakes head moves in direction then it
-// will consume food. Boris will be happy.
+// will consume food. Boris will be happy (and slowly becomes obese).
 {
     // If moving snake head in current direction will create intersect
     // then return true.
