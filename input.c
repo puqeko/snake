@@ -6,6 +6,7 @@
 // Editied 02-10-17
 
 #include "game.h"
+#include "input.h"
 #include "navswitch.h"
 
 

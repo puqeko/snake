@@ -8,6 +8,7 @@
 // Editied 01-10-17
 
 #include "game.h"  // has stdbool
+#include "snake.h"
 
 
 bool will_self_intersect(State* state)
@@ -35,7 +36,16 @@ void run_boris_run(State* state, bool doesEatFood)
 }
 
 
-void update_snake (State* state)
+void snake_init(State* state)
+{
+    // Initalise snake from 2, 0 to 2, 2
+    state->gameBoard[2][2] = SNAKE_CELL_UP;
+    state->gameBoard[2][1] = SNAKE_CELL_UP;
+    state->gameBoard[2][0] = SNAKE_CELL_UP;
+}
+
+
+void snake_update(State* state)
 // Update positions of the Boris's LED dot positions. If the head
 // position moves to an existing LED point that's on,
 // Boris has intersected himself - game over. Poor Boris.
