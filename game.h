@@ -6,13 +6,15 @@
 
 #include "system.h"
 
+#ifndef GAME_H
+#define GAME_H
 
 // Game modes. Can add more later if necessary
-enum {
+enum GAMEMODE {
     GAMEMODE_TITLE = 0,
     GAMEMODE_SNAKE,
     GAMEMODE_END
-}
+};
 
 
 // Used to map the snake's position and the position of food.
@@ -29,14 +31,16 @@ enum SNAKE_CELL_TYPE {
 // x,y coordinate system
 typedef struct position_s {
     uint8_t x, y;
-} Pos;
+} Position;
 
 
 // Game state passed around to all functions.
 typedef struct state_s {
-    int mode;
-    uint8_t snakeLength = 2; // Boris start's at length 2
+    int gameMode;
     uint8_t gameBoard[10][7];
-    Pos snakeHead;
-    Pos snakeTail;
+    uint8_t snakeLength;
+    Position snakeHead;
+    Position snakeTail;
 } State;
+
+#endif

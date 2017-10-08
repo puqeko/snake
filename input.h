@@ -5,6 +5,15 @@
 // By Jozef and Thomas
 // Editied 02-10-17
 
+#include "game.h"
 
-// Poll for navswitch and button inputs 
-void update_input(State* state);
+#ifndef GAME_INPUT_H
+#define GAME_INPUT_H
+
+// Initalise input settings.
+void input_init(void);
+
+// Poll for navswitch and button inputs.
+void input_update(State* state);
+
+#endif

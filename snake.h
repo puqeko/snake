@@ -5,6 +5,15 @@
 // By Jozef and Thomas
 // Editied 01-10-17
 
+#include "game.h"
+
+#ifndef GAME_SNAKE_H
+#define GAME_SNAKE_H
+
+// Set inital gameboard (starting snake)
+void snake_init(State* state);
 
 // Update the positions of the snake.
-void update_snake(State* state);
+void snake_update(State* state);
+
+#endif

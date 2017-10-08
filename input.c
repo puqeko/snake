@@ -6,24 +6,40 @@
 // Editied 02-10-17
 
 #include "game.h"
+#include "navswitch.h"
+
+
+void input_init(void)
+// TODO: Confiure navswitch etc.
+{
+    
+}
 
 
 void read_navswitch_inputs(void)
-// Poll the navswitch and update the direction of the head of the snake accordingly.
+// TODO: Poll the navswitch and update the direction of the head of the snake accordingly.
 {
 
 }
 
 
 void ir_transmit_data(State* state)
-// Keep boards in sync.
+// TODO: Keep boards in sync.
 {
 
 }
 
 
-void update_input(State* state)
-// Poll for navswitch and button inputs.
+void get_relative_direction(State* state, int direction)
+// TODO: Converge a naveswitch direction "direction" into a relative direction that
+// depends on the orientation of Boris.
+{
+
+}
+
+
+void input_update(State* state)
+// TODO: Poll for navswitch and button inputs.
 {
     if (state->gameMode == GAMEMODE_SNAKE) {
         // Check if it is valid to move the snake to a new position
