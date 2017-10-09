@@ -34,7 +34,7 @@ void display_init(void)
 }
 
 
-void display_column(const uint8_t patternArray[GAME_BOARD_ROWS][GAME_BOARD_COLUMNS], uint8_t currentColumn)
+void display_column(const uint8_t patternArray[GAMEBOARD_ROWS_NUM][GAMEBOARD_COLS_NUM], uint8_t currentColumn)
 // Draw patternArray to the LED matrix.
 {
     // TODO: Depending on the board this function is called by, it needs
