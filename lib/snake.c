@@ -9,7 +9,6 @@
 
 #include "snake.h"
 
-
 static Position get_next_position(State* state, Position currHeadPos) 
 // Takes the head position of the snake and determines its next position depending on whether it's an
 // up, down, left or right enum. Returns a position struct
@@ -69,6 +68,7 @@ static void run_boris_run(State* state)
         Position oldTail = state->snakeTail;
         Position tail = get_next_position(state, oldTail);
         
+        // Remove previous cell.
         state->gameBoard[oldTail.row][oldTail.col] = SNAKE_CELL_EMPTY;
         state->snakeTail = tail;  // Update to new position.
     }
@@ -77,6 +77,14 @@ static void run_boris_run(State* state)
     // TODO: SEND NEW POSITION (UART)
     state->gameBoard[head.row][head.col] = state->gameBoard[oldHead.row][oldHead.col];
     state->snakeHead = head;
+}
+
+
+static bool update_control_status(State* state)
+// This board is in control of the snake when the head is on
+// the first half of this board.
+{
+    state->isInControl = (state->snakeHead.col <= GAMEBOARD_COLS_NUM / 2);
 }
 
 
@@ -103,6 +111,8 @@ void snake_update(State* state)
 // position moves to an existing LED point that's on,
 // Boris has intersected himself - game over. Poor Boris.
 {
+    update_control_status(state);
+
     if (state->gameMode == GAMEMODE_SNAKE) {
         // Update snake position.
         run_boris_run(state);

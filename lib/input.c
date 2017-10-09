@@ -7,12 +7,49 @@
 
 #include "input.h"
 #include "navswitch.h"
+#include "ir_uart.h"
+
+
+//                          up, down, left, right, none
+static char codingChars[] = {'U', 'D', 'L', 'R'};
+static enum SNAKE_CELL codingCells[] = {  // Corrisponding 
+    SNAKE_CELL_UP, SNAKE_CELL_DOWN, SNAKE_CELL_LEFT, SNAKE_CELL_RIGHT};
 
 
 void input_init(void)
 // TODO: Configure navswitch etc. 
 {
     navswitch_init();
+    ir_uart_init();
+}
+
+
+static enum SNAKE_CELL decode_ir_input(char ch)
+// Converts a received char into a cell value or returns
+// empty if no match is found.
+{
+    static int numCodingChars = ARRAY_SIZE(codingChars);
+    for (int i = 0; i < numCodingChars; i++) {
+        if (ch == codingChars[i]) {
+            return codingCells[i];
+        }
+    }
+
+    return SNAKE_CELL_EMPTY;  // No match found
+}
+
+
+static char encode_ir_output(enum SNAKE_CELL cell)
+// Converts a cell value into a char for transmission.
+{
+    static int numCodingCells = ARRAY_SIZE(codingCells);
+    for (int i = 0; i < numCodingCells; i++) {
+        if (cell == codingCells[i]) {
+            return codingChars[i];
+        }
+    }
+
+    return '\0';  // Invalid input supplied.
 }
 
 
@@ -26,26 +63,39 @@ void read_navswitch_inputs(State* state)
     if (navswitch_push_event_p(NAVSWITCH_NORTH)) {
         // north navswitch has been pressed so head updated to up
         state->gameBoard[xPos][yPos] = SNAKE_CELL_UP;
+        ir_uart_putc(encode_ir_output(SNAKE_CELL_UP));
     }
     if (navswitch_push_event_p(NAVSWITCH_SOUTH)) {
         // south navswitch has been pressed so head updated to down
         state->gameBoard[xPos][yPos] = SNAKE_CELL_DOWN;
+        ir_uart_putc(encode_ir_output(SNAKE_CELL_DOWN));
     }
     if (navswitch_push_event_p(NAVSWITCH_WEST)) {
         // west navswitch has been pressed so head updated to left
         state->gameBoard[xPos][yPos] = SNAKE_CELL_LEFT;
+        ir_uart_putc(encode_ir_output(SNAKE_CELL_LEFT));
     }
     if (navswitch_push_event_p(NAVSWITCH_EAST)) {
         // east navswitch has been pressed so head updated to right
         state->gameBoard[xPos][yPos] = SNAKE_CELL_RIGHT;
+        ir_uart_putc(encode_ir_output(SNAKE_CELL_RIGHT));
     }
 }
 
 
-void ir_transmit_data(State* state)
+void receive_inputs(State* state)
 // TODO: Keep boards in sync.
 {
+    if (ir_uart_read_ready_p()) {
+        enum SNAKE_CELL cell = decode_ir_input(ir_uart_getc());
+        int8_t xPos = state->snakeHead.row;
+        int8_t yPos = state->snakeHead.col;
 
+        if (cell != SNAKE_CELL_EMPTY) {
+            state->gameBoard[xPos][yPos] = cell;
+        }
+        // Ignore bad input for now.
+    }
 }
 
 
@@ -53,12 +103,13 @@ void input_update(State* state)
 // TODO: Poll for navswitch and button inputs.
 {
     if (state->gameMode == GAMEMODE_SNAKE) {
-        // Check if it is valid to move the snake to a new position
-        // Change gamemode to end if the next move is invalid
 
-        // game mode snake as normal. What to do here?
-        read_navswitch_inputs(state);  // Tada!
-        
+        // Receive input from other board if not in control.
+        if(state->isInControl) {
+            read_navswitch_inputs(state);
+        } else {
+            receive_inputs(state);
+        }
 
         // Otherwise, update snake position
     } else if (state->gameMode == GAMEMODE_TITLE) {
