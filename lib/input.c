@@ -25,19 +25,19 @@ void read_navswitch_inputs(State* state)
 
     if (navswitch_push_event_p(NAVSWITCH_NORTH)) {
         // north navswitch has been pressed so head updated to up
-        state->gameBoard[xPos][yPos] = SNAKE_CELL_UP;
+        state->gameBoard[yPos][xPos] = SNAKE_CELL_UP;
     }
     if (navswitch_push_event_p(NAVSWITCH_SOUTH)) {
         // south navswitch has been pressed so head updated to down
-        state->gameBoard[xPos][yPos] = SNAKE_CELL_DOWN;
+        state->gameBoard[yPos][xPos] = SNAKE_CELL_DOWN;
     }
     if (navswitch_push_event_p(NAVSWITCH_WEST)) {
         // west navswitch has been pressed so head updated to left
-        state->gameBoard[xPos][yPos] = SNAKE_CELL_LEFT;
+        state->gameBoard[yPos][xPos] = SNAKE_CELL_LEFT;
     }
     if (navswitch_push_event_p(NAVSWITCH_EAST)) {
         // east navswitch has been pressed so head updated to right
-        state->gameBoard[xPos][yPos] = SNAKE_CELL_RIGHT;
+        state->gameBoard[yPos][xPos] = SNAKE_CELL_RIGHT;
     }
 }
 
@@ -100,7 +100,7 @@ void input_update(State* state)
     } else if (state->gameMode == GAMEMODE_TITLE) {
         // Do things with tinygl and wait for both players to press the button
     } else { // it's GAMEMODE_END
-        // do fancy whizz bang graphics, scrolling game over words etc
+        // do fancy whizz bang graphics, scrolling "Game over" words etc
     }
 
 }
