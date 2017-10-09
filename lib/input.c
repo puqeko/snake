@@ -21,23 +21,23 @@ void read_navswitch_inputs(State* state)
 {
     navswitch_update();
     int8_t xPos = state->snakeHead.row;
-    int8_t yPos = state->snakeTail.col;
+    int8_t yPos = state->snakeHead.col;
 
     if (navswitch_push_event_p(NAVSWITCH_NORTH)) {
         // north navswitch has been pressed so head updated to up
-        state->gameBoard[yPos][xPos] = SNAKE_CELL_UP;
+        state->gameBoard[xPos][yPos] = SNAKE_CELL_UP;
     }
     if (navswitch_push_event_p(NAVSWITCH_SOUTH)) {
         // south navswitch has been pressed so head updated to down
-        state->gameBoard[yPos][xPos] = SNAKE_CELL_DOWN;
+        state->gameBoard[xPos][yPos] = SNAKE_CELL_DOWN;
     }
     if (navswitch_push_event_p(NAVSWITCH_WEST)) {
         // west navswitch has been pressed so head updated to left
-        state->gameBoard[yPos][xPos] = SNAKE_CELL_LEFT;
+        state->gameBoard[xPos][yPos] = SNAKE_CELL_LEFT;
     }
     if (navswitch_push_event_p(NAVSWITCH_EAST)) {
         // east navswitch has been pressed so head updated to right
-        state->gameBoard[yPos][xPos] = SNAKE_CELL_RIGHT;
+        state->gameBoard[xPos][yPos] = SNAKE_CELL_RIGHT;
     }
 }
 

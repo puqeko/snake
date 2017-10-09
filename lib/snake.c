@@ -33,15 +33,11 @@ static Position get_next_position(State* state, Position currHeadPos)
 }
 
 
-static bool will_self_intersect(State* state, Position currHeadPos) 
+static bool will_self_intersect(State* state, Position nextHeadPos) 
 // Returns true if the next head position is already occupied by an enum other than SNAKE_CELL_EMPTY
 {
-    bool collisionImpending = false;
-    if (state->gameBoard[currHeadPos.row][currHeadPos.col] != SNAKE_CELL_EMPTY &&
-        state->gameBoard[currHeadPos.row][currHeadPos.col] != SNAKE_CELL_FOOD) {
-        collisionImpending = true;
-    }
-    return collisionImpending;
+    return state->gameBoard[nextHeadPos.row][nextHeadPos.col] != SNAKE_CELL_EMPTY &&
+           state->gameBoard[nextHeadPos.row][nextHeadPos.col] != SNAKE_CELL_FOOD;
 }
 
 
@@ -61,8 +57,9 @@ static void run_boris_run(State* state)
     Position oldHead = state->snakeHead;
     Position head = get_next_position(state, oldHead);
 
-    if (will_self_intersect(state, oldHead)) {
-        // TODO: Transition to game over state.
+    if (will_self_intersect(state, head)) {
+        state->gameMode = GAMEMODE_END;
+        return;  // We are done here.
     }
 
     if (will_eat_food(state, head)) {
@@ -89,13 +86,15 @@ void snake_init(State* state)
     state->gameBoard[0][2] = SNAKE_CELL_UP;
     state->gameBoard[1][2] = SNAKE_CELL_UP;
     state->gameBoard[2][2] = SNAKE_CELL_UP;
+    state->gameBoard[3][2] = SNAKE_CELL_UP;
+    state->gameBoard[4][2] = SNAKE_CELL_UP;
 
     Position head = {0, 2};
-    Position tail = {2, 2};
+    Position tail = {4, 2};
     state->snakeHead = head;
     state->snakeTail = tail;
 
-    state->snakeLength = 3;
+    state->snakeLength = 5;
 }
 
 
@@ -104,14 +103,9 @@ void snake_update(State* state)
 // position moves to an existing LED point that's on,
 // Boris has intersected himself - game over. Poor Boris.
 {
-    static bool test = false;
     if (state->gameMode == GAMEMODE_SNAKE) {
-        // Check if it is valid to move the snake to a new position
-        // Change gamemode to end if the next move is invalid
-
-        // Otherwise, update snake position
-        if (!test) run_boris_run(state);
-        test = false;
+        // Update snake position.
+        run_boris_run(state);
     }
     // else do nothing
 }
