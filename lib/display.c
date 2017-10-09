@@ -34,7 +34,7 @@ void display_init(void)
 }
 
 
-void display_column(const uint8_t patternArray[], uint8_t currentColumn)
+void display_column(const uint8_t patternArray[GAME_BOARD_ROWS][GAME_BOARD_COLUMNS], uint8_t currentColumn)
 // Draw patternArray to the LED matrix.
 {
     // TODO: Depending on the board this function is called by, it needs
@@ -51,7 +51,7 @@ void display_column(const uint8_t patternArray[], uint8_t currentColumn)
     for (currentRow = 0; currentRow < LEDMAT_ROWS_NUM; currentRow++) {
 
         // The rows are active low.
-        if (patternArray[currentRow] != SNAKE_CELL_EMPTY) {
+        if (patternArray[currentRow][currentColumn] != SNAKE_CELL_EMPTY) {
             pio_output_low(ledmatRows[currentRow]);
         } else {
             pio_output_high(ledmatRows[currentRow]);
@@ -67,15 +67,15 @@ void display_column(const uint8_t patternArray[], uint8_t currentColumn)
 void display_update(State* state)
 // Show the snake on the LED matrix.
 {
-    static int row = 0;  // static to remember value between updates.
-    display_column(state->gameBoard[row], row);
+    static int col = 0;  // static to remember value between updates.
+    display_column(state->gameBoard, col);
 
     // Wrap row round so that it iterates through the rows.
     // Therefore, the true refresh rate of the display is
     // the rate this function is called divided by the number
     // of rows in the LED matrix.
-    row++;
-    if (row == LEDMAT_ROWS_NUM) {
-        row = 0;
+    col++;
+    if (col == LEDMAT_COLS_NUM) {
+        col = 0;
     }
 }

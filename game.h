@@ -9,6 +9,10 @@
 #ifndef GAME_H
 #define GAME_H
 
+#define GAME_BOARD_ROWS 7
+#define GAME_BOARD_COLUMNS 10
+
+
 // Game modes. Can add more later if necessary
 enum GAMEMODE {
     GAMEMODE_TITLE = 0,
@@ -18,7 +22,7 @@ enum GAMEMODE {
 
 
 // Used to map the snake's position and the position of food.
-enum SNAKE_CELL_TYPE {
+enum SNAKE_CELL {
     SNAKE_CELL_EMPTY = 0,
     SNAKE_CELL_UP,
     SNAKE_CELL_DOWN,
@@ -30,14 +34,14 @@ enum SNAKE_CELL_TYPE {
 
 // x,y coordinate system
 typedef struct position_s {
-    uint8_t x, y;
+    int8_t row, col;
 } Position;
 
 
 // Game state passed around to all functions.
 typedef struct state_s {
     int gameMode;
-    uint8_t gameBoard[7][10]; // 7 rows, 10 columns to be consistent with LED matrices
+    uint8_t gameBoard[GAME_BOARD_ROWS][GAME_BOARD_COLUMNS]; // 7 rows, 10 columns to be consistent with LED matrices
     uint8_t snakeLength;
     Position snakeHead;
     Position snakeTail;
