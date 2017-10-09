@@ -14,8 +14,8 @@ bool will_self_intersect(State* state)
 // Check if next a planned movement in current direction will create a
 // self intersection by returing true is that is the case.
 {
-    // If moving snake head in current direction will create intersect
-    // then return true.
+    // Note from Jozef: this function is already written in input.c
+
 }
 
 
@@ -23,7 +23,7 @@ bool will_eat_food(State* state)
 // Return true if when the snakes head moves in direction then it
 // will consume food. Boris will be happy (and slowly becomes obese).
 {
-    // If moving snake head in current direction will create intersect
+    // If moving snake head in current direction will create intersect with 
     // then return true.
 }
 

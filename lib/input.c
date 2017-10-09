@@ -41,6 +41,7 @@ void read_navswitch_inputs(State* state)
     }
 }
 
+/*
 Position next_head_pos(State* state) 
 // Takes the head position of the snake and determines its next position depending on whether it's an
 // up, down, left or right enum. Returns a position struct
@@ -75,9 +76,10 @@ bool head_will_collide(State* state)
     }
     return collisionImpending;
 }
+*/
 
 void ir_transmit_data(State* state)
-// TODO: Keep boards in sync.
+// TODO: Keep boards in sync, transmit the the state pointer data
 {
 
 }
@@ -86,18 +88,13 @@ void input_update(State* state)
 // TODO: Poll for navswitch and button inputs.
 {
     if (state->gameMode == GAMEMODE_SNAKE) {
-        // Check if it is valid to move the snake to a new position
-        // Change gamemode to end if the next move is invalid
-        if (head_will_collide(State* state)) {
-            // Dammit Boris! You can't eat yourself! Game over...
-            state->gameMode = GAMEMODE_END;
-        }
-        // game mode snake as normal. What to do here?
-
-        
-
+        // Game mode snake as normal. What to do here?
         // Otherwise, update snake position
+        read_navswitch_inputs();
     } else if (state->gameMode == GAMEMODE_TITLE) {
+        
+        
+        // Initialise tinygl to display "SNAKE - Push when ready"
         // Do things with tinygl and wait for both players to press the button
     } else { // it's GAMEMODE_END
         // do fancy whizz bang graphics, scrolling "Game over" words etc
