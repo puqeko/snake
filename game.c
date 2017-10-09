@@ -15,7 +15,7 @@
 
 // display_update shows only one row at a time so we require it to run
 // LEDMAT_ROWS_NUM times at the desired frame rate of 100 Hz.
-#define DISPLAY_UPDATE_RATE (TASK_RATE / (200 * GAME_BOARD_ROWS))
+#define DISPLAY_UPDATE_RATE (TASK_RATE / (200 * GAMEBOARD_ROWS_NUM))
 
 
 int main (void)
@@ -29,9 +29,9 @@ int main (void)
     State state = {
         .gameMode = GAMEMODE_SNAKE,
         .gameBoard = {},  // 7 x 10 array initalised to zero
-        .snakeLength = 3, // Boris starts at this length
-        .snakeHead = {2, 2},  // Position 0, 0
-        .snakeTail = {0, 2},  // Position 0, 0
+        .snakeLength = 0, // Boris starts at this length
+        .snakeHead = {},  // Position 0, 0
+        .snakeTail = {},  // Position 0, 0
     };
 
     snake_init(&state);

@@ -10,54 +10,38 @@
 #include "snake.h"
 
 
-Position get_next_position(State* state, Position pos)
-{   
-    pos.row++;
-    if (pos.row > GAME_BOARD_ROWS) {
-        pos.row = 0;
-    }
-    // switch(state->gameBoard[pos.row][pos.col]) {
-    //     default:
-    //     // ERROR, there should be one of 4 values here.
-    //     // Fall back to doing the same as going up.
-    //     case SNAKE_CELL_UP:
-    //         pos.row--;
-    //         if (pos.row < 0) {
-    //             pos.row = GAME_BOARD_ROWS - 1;
-    //         }
-    //         break;
-    //     case SNAKE_CELL_DOWN:
-    //         pos.row++;
-    //         if (pos.row > GAME_BOARD_ROWS - 1) {
-    //             pos.row = 0;
-    //         }
-    //         break;
-    //     case SNAKE_CELL_LEFT:
-    //         pos.col--;
-    //         if (pos.col < 0) {
-    //             pos.col = GAME_BOARD_COLUMNS - 1;
-    //         }
-    //         break;
-    //     case SNAKE_CELL_RIGHT:
-    //         pos.col++;
-    //         if (pos.col > GAME_BOARD_COLUMNS - 1) {
-    //             pos.col = 0;
-    //         }
-    //         break;
-    // }
+static Position get_next_position(State* state, Position currHeadPos) 
+// Takes the head position of the snake and determines its next position depending on whether it's an
+// up, down, left or right enum. Returns a position struct
+{
+    enum SNAKE_CELL directionType = state->gameBoard[currHeadPos.row][currHeadPos.col];
 
-    return pos;
+    if (directionType == SNAKE_CELL_UP) {
+        currHeadPos.row = (currHeadPos.row - 1 + GAMEBOARD_ROWS_NUM) % GAMEBOARD_ROWS_NUM;
+    }
+    if (directionType == SNAKE_CELL_DOWN) {
+        currHeadPos.row = (currHeadPos.row + 1) % GAMEBOARD_ROWS_NUM;
+    }
+    if (directionType == SNAKE_CELL_LEFT) {
+        currHeadPos.col = (currHeadPos.col - 1 + GAMEBOARD_COLS_NUM) % GAMEBOARD_COLS_NUM;
+    }
+    if (directionType == SNAKE_CELL_RIGHT) {
+        currHeadPos.col = (currHeadPos.col + 1) % GAMEBOARD_COLS_NUM;
+    }
+
+    return currHeadPos;
 }
 
 
-static bool will_self_intersect(State* state, Position head)
-// Check if next a planned movement in current direction will create a
-// self intersection by returing true is that is the case.
+static bool will_self_intersect(State* state, Position currHeadPos) 
+// Returns true if the next head position is already occupied by an enum other than SNAKE_CELL_EMPTY
 {
-    // If moving snake head in current direction will create intersect
-    // then return true.
-    return state->gameBoard[head.row][head.col] != SNAKE_CELL_EMPTY &&
-           state->gameBoard[head.row][head.col] != SNAKE_CELL_FOOD;
+    bool collisionImpending = false;
+    if (state->gameBoard[currHeadPos.row][currHeadPos.col] != SNAKE_CELL_EMPTY &&
+        state->gameBoard[currHeadPos.row][currHeadPos.col] != SNAKE_CELL_FOOD) {
+        collisionImpending = true;
+    }
+    return collisionImpending;
 }
 
 
@@ -77,7 +61,7 @@ static void run_boris_run(State* state)
     Position oldHead = state->snakeHead;
     Position head = get_next_position(state, oldHead);
 
-    if (will_self_intersect(state, head)) {
+    if (will_self_intersect(state, oldHead)) {
         // TODO: Transition to game over state.
     }
 
@@ -105,6 +89,13 @@ void snake_init(State* state)
     state->gameBoard[0][2] = SNAKE_CELL_UP;
     state->gameBoard[1][2] = SNAKE_CELL_UP;
     state->gameBoard[2][2] = SNAKE_CELL_UP;
+
+    Position head = {0, 2};
+    Position tail = {2, 2};
+    state->snakeHead = head;
+    state->snakeTail = tail;
+
+    state->snakeLength = 3;
 }
 
 
@@ -120,7 +111,7 @@ void snake_update(State* state)
 
         // Otherwise, update snake position
         if (!test) run_boris_run(state);
-        //test = true;
+        test = false;
     }
     // else do nothing
 }
