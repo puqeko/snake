@@ -9,6 +9,9 @@
 #ifndef GAME_H
 #define GAME_H
 
+#define GAMEBOARD_ROWS_NUM 7
+#define GAMEBOARD_COLS_NUM 10 
+
 // Game modes. Can add more later if necessary
 enum GAMEMODE {
     GAMEMODE_TITLE = 0,
@@ -37,10 +40,12 @@ typedef struct position_s {
 // Game state passed around to all functions.
 typedef struct state_s {
     int gameMode;
-    uint8_t gameBoard[7][10]; // 7 rows, 10 columns to be consistent with LED matrices
+    // 7 rows, 10 columns to be consistent with LED matrices.
+    uint8_t gameBoard[GAMEBOARD_ROWS_NUM][GAMEBOARD_COLS_NUM]; 
     uint8_t snakeLength;
     Position snakeHead;
     Position snakeTail;
+
 } State;
 
 #endif
