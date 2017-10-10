@@ -99,6 +99,13 @@ Code code_get(void)
     return queue_pop(&messages_in);
 }
 
+static bool shouldGiveControl = false;
+
+void code_pass_control(void)
+{
+    shouldGiveControl = true;
+}
+
 void code_update(void)
 {
     if (ir_uart_read_ready_p()) {
@@ -107,7 +114,7 @@ void code_update(void)
         queue_push(&messages_in, message);
         // ir_uart_putc(recevied_ir(message));  // Echo back
 
-    } else if (get_num_messages(&messages_out)) {
+    } else if (get_num_messages(&messages_out) != 0) {
         Code message = queue_pop(&messages_out);
 
         // Code receipt = CODED_NONE;
@@ -120,5 +127,11 @@ void code_update(void)
             // while (!ir_uart_read_ready_p()) continue;  // TODO: Also wait for time.
             // receipt = decode_ir();
         // }
+    }
+
+    // wait till qu cleared.
+    if (get_num_messages(&messages_out) == 0 && shouldGiveControl) {
+        ir_uart_putc(CODED_PASS_CONTROL);
+        shouldGiveControl = false;
     }
 }

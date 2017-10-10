@@ -104,7 +104,7 @@ static void receive_external_input(State* state)
                 //update_control_status(state);
                 break;
             case CODED_PASS_CONTROL:
-                //state->isInControl = true;
+                state->isInControl = true;
                 break;
             case CODED_READY:
             case CODED_NONE:
@@ -125,6 +125,12 @@ void input_update_control(State* state)
     // so that changes stay synced to the 2 Hz cycle.
     //update_control_status(state);
 
+    bool shouldHaveControl = (state->snakeHead.col < GAMEBOARD_COLS_NUM / 2);
+    if (!shouldHaveControl && state->isInControl) {
+        code_pass_control();
+        state->isInControl = false;
+    }
+
     if (state->gameMode == GAMEMODE_SNAKE && state->isInControl) {
         // Clock from this board as we are in control.
         code_send(CODED_TICK);
@@ -133,8 +139,9 @@ void input_update_control(State* state)
         // ir_uart_getc();  // CODED_TICK_RECEIVED. TODO: retry on fail.
         controllerUpdateFunc(state);
     }
-
     //waitOneTick = false;
+
+    //shouldHaveControl = (state->snakeHead.col < GAMEBOARD_COLS_NUM / 2);
 
     // See above comment.
     //update_control_status(state);

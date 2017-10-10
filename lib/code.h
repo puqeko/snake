@@ -31,3 +31,4 @@ void code_update(void);
 Code decode_ir(void);
 bool code_has_message(void);
 void code_init(void);
+void code_pass_control(void);
