@@ -8,6 +8,8 @@
 #include "input.h"
 #include "navswitch.h"
 #include "ir_uart.h"
+#include "delay.h"
+#include "led.h"
 
 static input_controller_update_func_t controllerUpdateFunc;
 
@@ -15,6 +17,7 @@ static input_controller_update_func_t controllerUpdateFunc;
 static char codingChars[] = {'U', 'D', 'L', 'R'};
 static enum SNAKE_CELL codingCells[] = {  // Corrisponding 
     SNAKE_CELL_UP, SNAKE_CELL_DOWN, SNAKE_CELL_LEFT, SNAKE_CELL_RIGHT};
+// TODO: make this nice.
 
 
 void input_init(void)
@@ -22,6 +25,8 @@ void input_init(void)
 {
     navswitch_init();
     ir_uart_init();
+    led_init();
+    led_set (LED1, 0);
 }
 
 
@@ -127,7 +132,6 @@ void input_update_control(State* state)
     update_control_status(state);
 
     if (state->gameMode == GAMEMODE_SNAKE && state->isInControl) {
-        
         // Clock from this board as we are in control.
         controllerUpdateFunc(state);
     }
@@ -137,22 +141,64 @@ void input_update_control(State* state)
 }
 
 
+void send_is_ready() {
+    ir_uart_putc('A');
+}
+
+
 // 50 Hz
 void input_update(State* state)
 // TODO: Poll for navswitch and button inputs.
 {
-    if (state->gameMode == GAMEMODE_SNAKE) {
+    if (state->gameMode == GAMEMODE_TITLE) {
+
+        navswitch_update();
+
+        if (navswitch_push_event_p(NAVSWITCH_PUSH)) {
+            state->isReady = true;
+
+            if (state->isOtherBoardReady) {
+                send_is_ready();
+                DELAY_US (3000);  // Wait 3 ms for transmission. See ir_uart.c
+                state->gameMode = GAMEMODE_SNAKE;
+
+                // Reset for next time.
+                state->isReady = false;
+                state->isOtherBoardReady = false;
+            } else {
+                send_is_ready();
+            }
+        }
+
+        if (ir_uart_read_ready_p()) {
+            if (ir_uart_getc() == 'A') {
+                state->isOtherBoardReady = true;
+                led_set (LED1, 1);
+
+                if (state->isReady) {
+                    state->gameMode = GAMEMODE_SNAKE;
+
+                    // Reset for next time.
+                    state->isReady = false;
+                    state->isOtherBoardReady = false;
+                }
+            }
+        }
+
+    } else if (state->gameMode == GAMEMODE_SNAKE) {
         if(state->isInControl) {
             read_navswitch_inputs(state);
         } else {
-
             // Receive input from other board if not in control.
             receive_external_input(state);
         }
+<<<<<<< HEAD
     } else if (state->gameMode == GAMEMODE_TITLE) {
         
     } else { // it's GAMEMODE_END
         // do fancy whizz bang graphics, scrolling "Game over" words etc
         //            ^^^^^^^^^^^^^ absolutely
+=======
+>>>>>>> bc3ea088c4fcf82e87ef06fc41bc33071f6417cf
     }
 }

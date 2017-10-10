@@ -31,7 +31,7 @@ int main (void)
     // Keep all game settings and data in one object that is
     // allocated here in the main function.
     State state = {
-        .gameMode = GAMEMODE_SNAKE,
+        .gameMode = GAMEMODE_TITLE,
         .gameBoard = {},  // 7 x 10 array initalised to zero
         .snakeLength = 0, // Boris starts at this length
         .snakeHead = {},  // Position 0, 0
