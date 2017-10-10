@@ -6,6 +6,7 @@
 // Editied 02-10-17
 
 // TODO: Transfer ownership properly.
+// If given control but not in control then catchup.
 
 #include "input.h"
 #include "navswitch.h"
@@ -14,6 +15,7 @@
 #include "led.h"
 
 static input_controller_update_func_t controllerUpdateFunc;
+static bool previousControlState = false;
 
 typedef enum CODED_CHARS Code;
 static enum CODED_CHARS {
@@ -24,9 +26,11 @@ static enum CODED_CHARS {
     CODED_RIGHT = 'R',
     CODED_TICK = 'a',
     CODED_READY = 'z',
-    CODED_PASS_CONTROL = 'h'
+    CODED_PASS_CONTROL = 'P',
+    CODED_TICK_RECEIVED = 'T',
+    CODED_PASS_RECEIVED = 'H'
 };
-static Code codedOperations[] = {CODED_NONE, CODED_UP, CODED_DOWN, CODED_LEFT, CODED_RIGHT, CODED_TICK, CODED_READY, CODED_PASS_CONTROL};
+static Code codedOperations[] = {CODED_NONE, CODED_UP, CODED_DOWN, CODED_LEFT, CODED_RIGHT, CODED_TICK, CODED_READY, CODED_PASS_CONTROL, CODED_TICK_RECEIVED, CODED_PASS_RECEIVED};
 
 // ir_uart_getc()
 static Code decode_ir(unsigned char ch)
@@ -81,13 +85,15 @@ static void update_control_status(State* state)
 // This board is in control of the snake when the head is on
 // the first half of this board.
 {
-    state->isInControl = (state->snakeHead.col < GAMEBOARD_COLS_NUM / 2);
-//     if (state->isInControl != previousControlState) {
-//         if (ir_uart_read_ready_p()) {
-//             ir_uart_getc();  // clear buffer
-//         }
-//     }
-//     previousControlState = state->isInControl;
+    bool shouldHaveControl = (state->snakeHead.col < GAMEBOARD_COLS_NUM / 2);
+    if (!shouldHaveControl && state->isInControl) {
+        // while (!ir_uart_write_ready_p()) continue;
+        // ir_uart_putc(CODED_PASS_CONTROL);
+        // while (!ir_uart_read_ready_p()) continue;
+        // ir_uart_getc();  // TODO: retry on fail.
+        // state->isInControl = false;
+    }
+     previousControlState = shouldHaveControl;
 }
 
 
@@ -114,9 +120,17 @@ static void receive_external_input(State* state)
                 state->gameBoard[row][col] = SNAKE_CELL_LEFT;
                 break;
             case CODED_TICK:
-                ir_uart_putc(CODED_PASS_CONTROL);
+                ir_uart_putc(CODED_TICK_RECEIVED);
+                //DELAY_US(3000);  // wait for other
                 controllerUpdateFunc(state);
                 update_control_status(state);
+                break;
+            case CODED_PASS_CONTROL:
+                ir_uart_putc(CODED_PASS_RECEIVED);
+                state->isInControl = true;
+                state->gameBoard[3][9] = SNAKE_CELL_FOOD;
+                state->gameBoard[3][0] = SNAKE_CELL_FOOD;
+                
                 break;
             case CODED_READY:
             case CODED_NONE:
@@ -141,7 +155,7 @@ void input_update_control(State* state)
         // Clock from this board as we are in control.
         ir_uart_putc(CODED_TICK);
         while (!ir_uart_read_ready_p()) continue;
-        ir_uart_getc();
+        ir_uart_getc();  // CODED_TICK_RECEIVED. TODO: retry on fail.
         controllerUpdateFunc(state);
     }
 
@@ -167,6 +181,7 @@ void input_set_controller(input_controller_update_func_t func) {
 void init_as_controller_snake(State* state)
 {
     state->isInControl = true;
+    previousControlState = true;
 
     // Initalise snake from 2, 0 to 2, 2
     state->gameBoard[0][2] = SNAKE_CELL_UP;
@@ -217,7 +232,9 @@ void input_update(State* state)
 
             if (state->isOtherBoardReady) {
                 
-                DELAY_US (3000);  // Wait 3 ms for transmission. See ir_uart.c
+                DELAY_US (1000);  // Wait 1 ms for transmission. See ir_uart.c
+                if (ir_uart_read_ready_p()) ir_uart_getc();
+
                 state->gameMode = GAMEMODE_SNAKE;
 
                 // Reset for next time.
