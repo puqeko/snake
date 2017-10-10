@@ -82,19 +82,6 @@ static void run_boris_run(State* state)
 
 void snake_init(State* state)
 {
-    // Initalise snake from 2, 0 to 2, 2
-    state->gameBoard[0][2] = SNAKE_CELL_UP;
-    state->gameBoard[1][2] = SNAKE_CELL_UP;
-    state->gameBoard[2][2] = SNAKE_CELL_UP;
-    state->gameBoard[3][2] = SNAKE_CELL_UP;
-    state->gameBoard[4][2] = SNAKE_CELL_UP;
-
-    Position head = {0, 2};
-    Position tail = {4, 2};
-    state->snakeHead = head;
-    state->snakeTail = tail;
-
-    state->snakeLength = 5;
 
     //state->isInControl = true;
     state->gameMode = GAMEMODE_TITLE;

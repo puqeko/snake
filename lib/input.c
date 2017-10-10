@@ -134,6 +134,7 @@ void input_update_control(State* state)
     if (state->gameMode == GAMEMODE_SNAKE && state->isInControl) {
         // Clock from this board as we are in control.
         controllerUpdateFunc(state);
+        // ping
     }
 
     // See above comment.
@@ -143,6 +144,45 @@ void input_update_control(State* state)
 
 void send_is_ready() {
     ir_uart_putc('A');
+}
+
+
+void init_as_controller_snake(State* state)
+{
+    state->isInControl = true;
+
+    // Initalise snake from 2, 0 to 2, 2
+    state->gameBoard[0][2] = SNAKE_CELL_UP;
+    state->gameBoard[1][2] = SNAKE_CELL_UP;
+    state->gameBoard[2][2] = SNAKE_CELL_UP;
+    state->gameBoard[3][2] = SNAKE_CELL_UP;
+    state->gameBoard[4][2] = SNAKE_CELL_UP;
+
+    Position head = {0, 2};
+    Position tail = {4, 2};
+    state->snakeHead = head;
+    state->snakeTail = tail;
+
+    state->snakeLength = 5;
+}
+
+void init_as_slave_snake(State* state)
+{
+    state->isInControl = false;
+
+    // Initalise snake mirrored
+    state->gameBoard[6][7] = SNAKE_CELL_DOWN;
+    state->gameBoard[5][7] = SNAKE_CELL_DOWN;
+    state->gameBoard[4][7] = SNAKE_CELL_DOWN;
+    state->gameBoard[3][7] = SNAKE_CELL_DOWN;
+    state->gameBoard[2][7] = SNAKE_CELL_DOWN;
+
+    Position head = {2, 7};
+    Position tail = {6, 7};
+    state->snakeHead = head;
+    state->snakeTail = tail;
+
+    state->snakeLength = 5;
 }
 
 
@@ -165,6 +205,7 @@ void input_update(State* state)
                 // Reset for next time.
                 state->isReady = false;
                 state->isOtherBoardReady = false;
+                init_as_slave_snake(state);
             } else {
                 send_is_ready();
             }
@@ -181,6 +222,7 @@ void input_update(State* state)
                     // Reset for next time.
                     state->isReady = false;
                     state->isOtherBoardReady = false;
+                    init_as_controller_snake(state);
                 }
             }
         }
