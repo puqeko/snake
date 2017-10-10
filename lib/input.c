@@ -13,42 +13,9 @@
 #include "ir_uart.h"
 #include "delay.h"
 #include "led.h"
+#include "code.h"
 
 static input_controller_update_func_t controllerUpdateFunc;
-static bool previousControlState = false;
-static bool waitOneTick = false;
-static bool waiting = false;
-
-typedef enum CODED_CHARS Code;
-static enum CODED_CHARS {
-    CODED_NONE = '\0',
-    CODED_UP = 'U',
-    CODED_DOWN = 'D',
-    CODED_LEFT = 'L',
-    CODED_RIGHT = 'R',
-    CODED_TICK = 'a',
-    CODED_READY = 'z',
-    CODED_PASS_CONTROL = 'P',
-    CODED_TICK_RECEIVED = 'T',
-    CODED_PASS_RECEIVED = 'H'
-};
-static Code codedOperations[] = {CODED_NONE, CODED_UP, CODED_DOWN, CODED_LEFT, CODED_RIGHT, CODED_TICK, CODED_READY, CODED_PASS_CONTROL, CODED_TICK_RECEIVED, CODED_PASS_RECEIVED};
-
-// ir_uart_getc()
-static Code decode_ir(unsigned char ch)
-// Converts a received char into a Code value or returns
-// CODED_NONE if no match is found.
-{
-    static int numCodedOps = ARRAY_SIZE(codedOperations);
-
-    for (int i = 0; i < numCodedOps; i++) {
-        if (ch == codedOperations[i]) {
-            return codedOperations[i];
-        }
-    }
-
-    return CODED_NONE;  // No match found
-}
 
 
 void read_navswitch_inputs(State* state)
@@ -83,39 +50,39 @@ void read_navswitch_inputs(State* state)
 }
 
 
-static void update_control_status(State* state)
-// This board is in control of the snake when the head is on
-// the first half of this board.
-{
-    bool shouldHaveControl = (state->snakeHead.col < GAMEBOARD_COLS_NUM / 2);
-    if (!shouldHaveControl && state->isInControl && !waitOneTick) {
-        // while (!ir_uart_write_ready_p()) continue;
-        // ir_uart_putc(CODED_PASS_CONTROL);
-        // while (!ir_uart_read_ready_p()) continue;
-        // ir_uart_getc();  // TODO: retry on fail.
-        // state->isInControl = false;
-    }
-    if (!waitOneTick && waiting) {
-        state->isInControl = true;
-        waiting = false;
-    } else if (!waiting) {
-        if (shouldHaveControl && !previousControlState) {
-            waitOneTick = true;
-            waiting = true;
-        } else if (!shouldHaveControl && previousControlState) {
-            state->isInControl = false;
-        }
-    }
-     previousControlState = shouldHaveControl;
-}
+// static void update_control_status(State* state)
+// // This board is in control of the snake when the head is on
+// // the first half of this board.
+// {
+//     // bool shouldHaveControl = (state->snakeHead.col < GAMEBOARD_COLS_NUM / 2);
+//     // if (!shouldHaveControl && state->isInControl && !waitOneTick) {
+//     //     // while (!ir_uart_write_ready_p()) continue;
+//     //     // ir_uart_putc(CODED_PASS_CONTROL);
+//     //     // while (!ir_uart_read_ready_p()) continue;
+//     //     // ir_uart_getc();  // TODO: retry on fail.
+//     //     // state->isInControl = false;
+//     // }
+//     // if (!waitOneTick && waiting) {
+//     //     state->isInControl = true;
+//     //     waiting = false;
+//     // } else if (!waiting) {
+//     //     if (shouldHaveControl && !previousControlState) {
+//     //         waitOneTick = true;
+//     //         waiting = true;
+//     //     } else if (!shouldHaveControl && previousControlState) {
+//     //         state->isInControl = false;
+//     //     }
+//     // }
+//     //  previousControlState = shouldHaveControl;
+// }
 
 
 static void receive_external_input(State* state)
 // TODO: Keep boards in sync.
 {
-    if (ir_uart_read_ready_p()) {
+    if (code_has_message()) {
         led_set (LED1, 1);
-        Code message = decode_ir(ir_uart_getc());
+        Code message = code_get();
         int row = state->snakeHead.row;
         int col = state->snakeHead.col;
         
@@ -133,17 +100,11 @@ static void receive_external_input(State* state)
                 state->gameBoard[row][col] = SNAKE_CELL_LEFT;
                 break;
             case CODED_TICK:
-                ir_uart_putc(CODED_TICK_RECEIVED);
-                //DELAY_US(3000);  // wait for other
                 controllerUpdateFunc(state);
-                update_control_status(state);
+                //update_control_status(state);
                 break;
             case CODED_PASS_CONTROL:
-                ir_uart_putc(CODED_PASS_RECEIVED);
-                state->isInControl = true;
-                state->gameBoard[3][9] = SNAKE_CELL_FOOD;
-                state->gameBoard[3][0] = SNAKE_CELL_FOOD;
-                
+                //state->isInControl = true;
                 break;
             case CODED_READY:
             case CODED_NONE:
@@ -164,18 +125,19 @@ void input_update_control(State* state)
     // so that changes stay synced to the 2 Hz cycle.
     //update_control_status(state);
 
-    if (state->gameMode == GAMEMODE_SNAKE && state->isInControl && !waitOneTick) {
+    if (state->gameMode == GAMEMODE_SNAKE && state->isInControl) {
         // Clock from this board as we are in control.
-        ir_uart_putc(CODED_TICK);
-        while (!ir_uart_read_ready_p()) continue;
-        ir_uart_getc();  // CODED_TICK_RECEIVED. TODO: retry on fail.
+        code_send(CODED_TICK);
+        // ir_uart_putc(CODED_TICK);
+        // while (!ir_uart_read_ready_p()) continue;
+        // ir_uart_getc();  // CODED_TICK_RECEIVED. TODO: retry on fail.
         controllerUpdateFunc(state);
     }
 
-    waitOneTick = false;
+    //waitOneTick = false;
 
     // See above comment.
-    update_control_status(state);
+    //update_control_status(state);
 }
 
 
@@ -196,7 +158,7 @@ void input_set_controller(input_controller_update_func_t func) {
 void init_as_controller_snake(State* state)
 {
     state->isInControl = true;
-    previousControlState = true;
+    //previousControlState = true;
 
     // Initalise snake from 2, 0 to 2, 2
     state->gameBoard[0][2] = SNAKE_CELL_UP;
@@ -261,7 +223,7 @@ void input_update(State* state)
         }
 
         if (ir_uart_read_ready_p()) {
-            if (decode_ir(ir_uart_getc()) == CODED_READY) {
+            if (decode_ir() == CODED_READY) {
                 state->isOtherBoardReady = true;
                 led_set (LED1, 1);
 
@@ -277,6 +239,8 @@ void input_update(State* state)
         }
 
     } else if (state->gameMode == GAMEMODE_SNAKE) {
+        code_update();
+
         if(state->isInControl) {
             read_navswitch_inputs(state);
         } else {
@@ -285,4 +249,3 @@ void input_update(State* state)
         }
     }
 }
-
