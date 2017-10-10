@@ -16,6 +16,8 @@
 
 static input_controller_update_func_t controllerUpdateFunc;
 static bool previousControlState = false;
+static bool waitOneTick = false;
+static bool waiting = false;
 
 typedef enum CODED_CHARS Code;
 static enum CODED_CHARS {
@@ -86,12 +88,23 @@ static void update_control_status(State* state)
 // the first half of this board.
 {
     bool shouldHaveControl = (state->snakeHead.col < GAMEBOARD_COLS_NUM / 2);
-    if (!shouldHaveControl && state->isInControl) {
+    if (!shouldHaveControl && state->isInControl && !waitOneTick) {
         // while (!ir_uart_write_ready_p()) continue;
         // ir_uart_putc(CODED_PASS_CONTROL);
         // while (!ir_uart_read_ready_p()) continue;
         // ir_uart_getc();  // TODO: retry on fail.
         // state->isInControl = false;
+    }
+    if (!waitOneTick && waiting) {
+        state->isInControl = true;
+        waiting = false;
+    } else if (!waiting) {
+        if (shouldHaveControl && !previousControlState) {
+            waitOneTick = true;
+            waiting = true;
+        } else if (!shouldHaveControl && previousControlState) {
+            state->isInControl = false;
+        }
     }
      previousControlState = shouldHaveControl;
 }
@@ -151,13 +164,15 @@ void input_update_control(State* state)
     // so that changes stay synced to the 2 Hz cycle.
     //update_control_status(state);
 
-    if (state->gameMode == GAMEMODE_SNAKE && state->isInControl) {
+    if (state->gameMode == GAMEMODE_SNAKE && state->isInControl && !waitOneTick) {
         // Clock from this board as we are in control.
         ir_uart_putc(CODED_TICK);
         while (!ir_uart_read_ready_p()) continue;
         ir_uart_getc();  // CODED_TICK_RECEIVED. TODO: retry on fail.
         controllerUpdateFunc(state);
     }
+
+    waitOneTick = false;
 
     // See above comment.
     update_control_status(state);
