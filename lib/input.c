@@ -234,5 +234,13 @@ void input_update(State* state)
             // Receive input from other board if not in control.
             receive_external_input(state);
         }
+<<<<<<< HEAD
+    } else if (state->gameMode == GAMEMODE_TITLE) {
+        
+    } else { // it's GAMEMODE_END
+        // do fancy whizz bang graphics, scrolling "Game over" words etc
+        //            ^^^^^^^^^^^^^ absolutely
+=======
+>>>>>>> bc3ea088c4fcf82e87ef06fc41bc33071f6417cf
     }
 }

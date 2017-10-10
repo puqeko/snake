@@ -48,6 +48,8 @@ typedef struct state_s {
     uint8_t snakeLength;
     Position snakeHead;
     Position snakeTail;
+    // Initialise the game mode string as title screen string
+    char* gameModeString = "SNAKE - Push when ready";
 } State;
 
 #endif
