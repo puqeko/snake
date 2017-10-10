@@ -5,6 +5,8 @@
 // By Jozef and Thomas
 // Editied 02-10-17
 
+// TODO: Transfer ownership properly.
+
 #include "input.h"
 #include "navswitch.h"
 #include "ir_uart.h"
@@ -12,7 +14,6 @@
 #include "led.h"
 
 static input_controller_update_func_t controllerUpdateFunc;
-static bool previousControlState = false;
 
 typedef enum CODED_CHARS Code;
 static enum CODED_CHARS {
@@ -22,9 +23,10 @@ static enum CODED_CHARS {
     CODED_LEFT = 'L',
     CODED_RIGHT = 'R',
     CODED_TICK = 'a',
-    CODED_READY = 'z'
+    CODED_READY = 'z',
+    CODED_PASS_CONTROL = 'h'
 };
-static Code codedOperations[] = {CODED_NONE, CODED_UP, CODED_DOWN, CODED_LEFT, CODED_RIGHT, CODED_TICK, CODED_READY};
+static Code codedOperations[] = {CODED_NONE, CODED_UP, CODED_DOWN, CODED_LEFT, CODED_RIGHT, CODED_TICK, CODED_READY, CODED_PASS_CONTROL};
 
 // ir_uart_getc()
 static Code decode_ir(unsigned char ch)
@@ -112,6 +114,7 @@ static void receive_external_input(State* state)
                 state->gameBoard[row][col] = SNAKE_CELL_LEFT;
                 break;
             case CODED_TICK:
+                ir_uart_putc(CODED_PASS_CONTROL);
                 controllerUpdateFunc(state);
                 update_control_status(state);
                 break;
@@ -132,12 +135,14 @@ void input_update_control(State* state)
 {
     // Ensure control status is correct when we enter and leave update control
     // so that changes stay synced to the 2 Hz cycle.
-    update_control_status(state);
+    //update_control_status(state);
 
     if (state->gameMode == GAMEMODE_SNAKE && state->isInControl) {
         // Clock from this board as we are in control.
-        controllerUpdateFunc(state);
         ir_uart_putc(CODED_TICK);
+        while (!ir_uart_read_ready_p()) continue;
+        ir_uart_getc();
+        controllerUpdateFunc(state);
     }
 
     // See above comment.

@@ -79,7 +79,7 @@ void board_column(const uint8_t patternArray[GAMEBOARD_ROWS_NUM][GAMEBOARD_COLS_
     for (currentRow = 0; currentRow < LEDMAT_ROWS_NUM; currentRow++) {
 
         // The rows are active low.
-        if (patternArray[currentRow][currentColumn] != SNAKE_CELL_EMPTY) {
+        if (patternArray[currentRow][currentColumn+5] != SNAKE_CELL_EMPTY) {
             pio_output_low(ledmatRows[currentRow]);
         } else {
             pio_output_high(ledmatRows[currentRow]);
