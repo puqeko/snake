@@ -96,7 +96,29 @@ void snake_init(State* state)
 
     state->snakeLength = 5;
 
-    state->isInControl = true;
+    //state->isInControl = true;
+    state->gameMode = GAMEMODE_TITLE;
+
+    // state->isReady = false;
+    // state->isOtherBoardReady = false;
+
+    //     state->gameMode = GAMEMODE_TITLE;
+
+    //     // Initalise snake from 2, 0 to 2, 2
+    //     state->gameBoard[6][7] = SNAKE_CELL_DOWN;
+    //     state->gameBoard[5][7] = SNAKE_CELL_DOWN;
+    //     state->gameBoard[4][7] = SNAKE_CELL_DOWN;
+    //     state->gameBoard[3][7] = SNAKE_CELL_DOWN;
+    //     state->gameBoard[2][7] = SNAKE_CELL_DOWN;
+    
+    //     Position head = {2, 7};
+    //     Position tail = {6, 7};
+    //     state->snakeHead = head;
+    //     state->snakeTail = tail;
+    
+    //     state->snakeLength = 5;
+    
+    //     state->isInControl = false;
 }
 
 
