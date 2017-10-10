@@ -151,9 +151,6 @@ void input_update(State* state)
         }
     } else if (state->gameMode == GAMEMODE_TITLE) {
         
-        
-        // Initialise tinygl to display "SNAKE - Push when ready"
-        // Do things with tinygl and wait for both players to press the button
     } else { // it's GAMEMODE_END
         // do fancy whizz bang graphics, scrolling "Game over" words etc
         //            ^^^^^^^^^^^^^ absolutely
