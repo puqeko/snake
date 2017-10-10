@@ -91,6 +91,18 @@ void read_navswitch_inputs(State* state)
 }
 
 
+static bool update_control_status(State* state)
+// This board is in control of the snake when the head is on
+// the first half of this board.
+{
+    if (state->snakeHead.col < GAMEBOARD_COLS_NUM / 2) {
+        state->isInControl = true;
+    } else {
+        state->isInControl = false;
+    }
+}
+
+
 void receive_external_input(State* state)
 // TODO: Keep boards in sync.
 {
@@ -101,21 +113,8 @@ void receive_external_input(State* state)
 
         if (cell != SNAKE_CELL_EMPTY) {
             state->gameBoard[xPos][yPos] = cell;
-            controllerUpdateFunc(state);
         }
         // Ignore bad input for now.
-    }
-}
-
-
-static bool update_control_status(State* state)
-// This board is in control of the snake when the head is on
-// the first half of this board.
-{
-    if (state->snakeHead.col < GAMEBOARD_COLS_NUM / 2 - 1) {
-        state->isInControl = true;
-    } else {
-        state->isInControl = false;
     }
 }
 
@@ -123,13 +122,18 @@ static bool update_control_status(State* state)
 // 2 Hz
 void input_update_control(State* state)
 {
+    // Ensure control status is correct when we enter and leave update control
+    // so that changes stay synced to the 2 Hz cycle.
     update_control_status(state);
 
     if (state->gameMode == GAMEMODE_SNAKE && state->isInControl) {
         
-        // Clock from this board.
+        // Clock from this board as we are in control.
         controllerUpdateFunc(state);
     }
+
+    // See above comment.
+    update_control_status(state);
 }
 
 

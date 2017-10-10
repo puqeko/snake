@@ -95,6 +95,8 @@ void snake_init(State* state)
     state->snakeTail = tail;
 
     state->snakeLength = 5;
+
+    state->isInControl = true;
 }
 
 
