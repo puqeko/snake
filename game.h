@@ -5,12 +5,19 @@
 // Editied 02-10-17
 
 #include "system.h"
+#include "task.h"
 
 #ifndef GAME_H
 #define GAME_H
 
 #define GAMEBOARD_ROWS_NUM 7
-#define GAMEBOARD_COLS_NUM 10 
+#define GAMEBOARD_COLS_NUM 10
+
+// board_update shows only one row at a time so we require it to run
+// LEDMAT_ROWS_NUM times at the desired frame rate of 100 Hz.
+#define TINYGL_TEXT_SPEED 20
+#define DISP_ROWS_UPDATE_FREQ (200 * GAMEBOARD_ROWS_NUM)
+#define TINYGL_UPDATE_RATE (TASK_RATE / DISP_ROWS_UPDATE_FREQ) // this may be incorrect for tinygl, might correct
 
 // Game modes. Can add more later if necessary
 enum GAMEMODE {
@@ -49,7 +56,7 @@ typedef struct state_s {
     Position snakeHead;
     Position snakeTail;
     // Initialise the game mode string as title screen string
-    char* gameModeString = "SNAKE - Push when ready";
+    char* gameModeString;
 } State;
 
 #endif

@@ -7,24 +7,18 @@
 #include "game.h"
 #include "input.h"
 #include "snake.h"
-#include "display.h"
+#include "board.h"
 #include "task.h"
 
 #define SNAKE_UPDATE_RATE (TASK_RATE / 2)
 #define INPUT_UPDATE_RATE (TASK_RATE / 50)
-
-// display_update shows only one row at a time so we require it to run
-// LEDMAT_ROWS_NUM times at the desired frame rate of 100 Hz.
-#define TINYGL_TEXT_SPEED 20
-#define DISP_ROWS_UPDATE_FREQ (200 * GAMEBOARD_ROWS_NUM)
-#define TINYGL_UPDATE_RATE (TASK_RATE / DISP_ROWS_UPDATE_FREQ) // this may be incorrect for tinygl, might correct
 #define DISPLAY_UPDATE_RATE (TASK_RATE / DISP_ROWS_UPDATE_FREQ)
 
 
 int main (void)
 {
     system_init ();
-    display_init();
+    board_init();
     input_init();
     input_set_controller(snake_update);
 
@@ -36,6 +30,7 @@ int main (void)
         .snakeLength = 0, // Boris starts at this length
         .snakeHead = {},  // Position 0, 0
         .snakeTail = {},  // Position 0, 0
+        .gameModeString = "SNAKE - Push when ready"
     };
 
     snake_init(&state);
@@ -52,7 +47,7 @@ int main (void)
             .period = INPUT_UPDATE_RATE,
             .data = &state
         }, {
-            .func = (task_func_t)display_update,
+            .func = (task_func_t)board_update,
             .period = DISPLAY_UPDATE_RATE,
             .data = &state
         }

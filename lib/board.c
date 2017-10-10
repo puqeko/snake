@@ -5,7 +5,7 @@
 // By Jozef and Thomas
 // Editied 01-10-17
 
-#include "display.h"
+#include "board.h"
 #include "pio.h"
 #include "ledmat.h"
 #include "tinygl.h"
@@ -45,21 +45,24 @@ void reset_state_to_title(State* state)
 // Reset to the back to the title screen 
 {
     state->gameMode = GAMEMODE_TITLE;
-    state->gameBoard = {};
-    snake_init(state); // Reinitialise the snake information
+    for (int i = 0; i < GAMEBOARD_ROWS_NUM; i++) for (int j = 0; j < GAMEBOARD_COLS_NUM; j++) {
+        state->gameBoard[i][j] = SNAKE_CELL_EMPTY;
+    }
+    //snake_init(state); // Reinitialise the snake information
 }
-void display_init(void)
+
+void board_init(void)
 // Configure LED display. Also initialises tinygl to run at the display update rate (called tinygl rate), 
 // sets the font and the message speed
 {
     ledmat_init();
     tinygl_init(TINYGL_UPDATE_RATE);
-    tinygl_font_set(&font5x7_1);
+    //tinygl_font_set(&font5x7_1);
     tinygl_text_speed_set(TINYGL_TEXT_SPEED);
     tinygl_text_mode_set(TINYGL_TEXT_MODE_SCROLL);
 }
 
-void display_column(const uint8_t patternArray[GAMEBOARD_ROWS_NUM][GAMEBOARD_COLS_NUM], uint8_t currentColumn)
+void board_column(const uint8_t patternArray[GAMEBOARD_ROWS_NUM][GAMEBOARD_COLS_NUM], uint8_t currentColumn)
 // Draw patternArray to the LED matrix.
 {
     // TODO: Depending on the board this function is called by, it needs
@@ -76,7 +79,7 @@ void display_column(const uint8_t patternArray[GAMEBOARD_ROWS_NUM][GAMEBOARD_COL
     for (currentRow = 0; currentRow < LEDMAT_ROWS_NUM; currentRow++) {
 
         // The rows are active low.
-        if (patternArray[currentRow][currentColumn+5] != SNAKE_CELL_EMPTY) {
+        if (patternArray[currentRow][currentColumn] != SNAKE_CELL_EMPTY) {
             pio_output_low(ledmatRows[currentRow]);
         } else {
             pio_output_high(ledmatRows[currentRow]);
@@ -90,22 +93,22 @@ void display_column(const uint8_t patternArray[GAMEBOARD_ROWS_NUM][GAMEBOARD_COL
 
 
 
-void display_update(State* state)
+void board_update(State* state)
 // Show the snake on the LED matrix.
 {
     if (state->gameMode == GAMEMODE_TITLE) {
-        char* titleString = "SNAKE - Push when ready";
-        tinygl_text(titleString);
-        tinygl_update();
+        // char* titleString = "SNAKE - Push when ready";
+        // tinygl_text(titleString);
+        // tinygl_update();
     }
     if (state->gameMode == GAMEMODE_END) {
-        char* endString = "Game over!";
-        tinygl_text(endString);
+        // char* endString = "Game over!";
+        // tinygl_text(endString);
         tinygl_update();
     }
     if (state->gameMode == GAMEMODE_SNAKE) {
         static int col = 0;  // static to remember value between updates.
-        display_column(state->gameBoard, col);
+        board_column(state->gameBoard, col);
 
         // Wrap row round so that it iterates through the rows.
         // Therefore, the true refresh rate of the display is

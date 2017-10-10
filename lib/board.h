@@ -13,9 +13,9 @@
 #define LEDMAT_ROWS_NUM 7
 
 // Configure LED display
-void display_init(void);
+void board_init(void);
 
 // Show the snake on the LED matrix
-void display_update(State* state);
+void board_update(State* state);
 
 #endif
