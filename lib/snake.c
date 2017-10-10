@@ -80,14 +80,6 @@ static void run_boris_run(State* state)
 }
 
 
-static bool update_control_status(State* state)
-// This board is in control of the snake when the head is on
-// the first half of this board.
-{
-    state->isInControl = (state->snakeHead.col <= GAMEBOARD_COLS_NUM / 2);
-}
-
-
 void snake_init(State* state)
 {
     // Initalise snake from 2, 0 to 2, 2
@@ -111,8 +103,6 @@ void snake_update(State* state)
 // position moves to an existing LED point that's on,
 // Boris has intersected himself - game over. Poor Boris.
 {
-    update_control_status(state);
-
     if (state->gameMode == GAMEMODE_SNAKE) {
         // Update snake position.
         run_boris_run(state);

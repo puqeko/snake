@@ -23,6 +23,7 @@ int main (void)
     system_init ();
     display_init();
     input_init();
+    input_set_controller(snake_update);
 
     // Keep all game settings and data in one object that is
     // allocated here in the main function.
@@ -40,7 +41,7 @@ int main (void)
     // a reference to the same state object.
     task_t tasks[] = {
         {
-            .func = (task_func_t)snake_update,
+            .func = (task_func_t)input_update_control,
             .period = SNAKE_UPDATE_RATE,
             .data = &state
         }, {
