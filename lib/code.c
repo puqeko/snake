@@ -130,7 +130,7 @@ void code_pass_control(void)
 {
     // Wait 5 ms to sync ticks between boards on the
     // transistion.
-    DELAY_US(6000);
+    DELAY_US(3000);
     code_send(CODED_PASS_CONTROL);
 }
 
