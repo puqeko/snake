@@ -5,11 +5,11 @@
 
 static Code codedOperations[] = {
     CODED_NONE, CODED_UP, CODED_DOWN, CODED_LEFT, CODED_RIGHT, CODED_TICK,
-    CODED_READY, CODED_PASS_CONTROL, CODED_UP_RECEIVED, CODED_DOWN_RECEIVED,
+    CODED_READY, CODED_PASS_CONTROL}; /*CODED_UP_RECEIVED, CODED_DOWN_RECEIVED,
     CODED_LEFT_RECEIVED, CODED_RIGHT_RECEIVED, CODED_TICK_RECEIVED,
-    CODED_READY_RECEIVED, CODED_PASS_CONTROL_RECEIVED};
+    CODED_READY_RECEIVED, CODED_PASS_CONTROL_RECEIVED};*/
 
-#define QU_LENGTH 20
+#define QU_LENGTH 10
 
 typedef struct queue_s {
     Code messages[QU_LENGTH];
@@ -44,20 +44,20 @@ static Code queue_pop(Queue* qu)
 }
 
 
-static Code recevied_ir(Code code)
-// Converts a to return code
-{
-    static int numCodedOps = ARRAY_SIZE(codedOperations);
+// static Code recevied_ir(Code code)
+// // Converts a to return code
+// {
+//     static int numCodedOps = ARRAY_SIZE(codedOperations);
 
-    int pos = 1;
-    for (; pos < numCodedOps; pos++) {
-        if (codedOperations[pos] == code) {
-            break;
-        }
-    }
+//     int pos = 1;
+//     for (; pos < numCodedOps; pos++) {
+//         if (codedOperations[pos] == code) {
+//             break;
+//         }
+//     }
 
-    return codedOperations[numCodedOps / 2 + pos];
-}
+//     return codedOperations[numCodedOps / 2 + pos];
+// }
 
 
 Code decode_ir(void)
