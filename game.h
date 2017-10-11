@@ -19,6 +19,7 @@
 #define DISP_ROWS_UPDATE_FREQ (200 * GAMEBOARD_ROWS_NUM)
 #define TINYGL_UPDATE_RATE (TASK_RATE / DISP_ROWS_UPDATE_FREQ) // this may be incorrect for tinygl, might correct
 
+
 // Game modes. Can add more later if necessary
 enum GAMEMODE {
     GAMEMODE_TITLE = 0,

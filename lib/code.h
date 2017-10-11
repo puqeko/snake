@@ -15,14 +15,7 @@
     CODED_RIGHT = 'R',
     CODED_TICK = 'T',
     CODED_READY = 'Z',
-    CODED_PASS_CONTROL = 'P'//,
-    // CODED_UP_RECEIVED = 'u',
-    // CODED_DOWN_RECEIVED = 'd',
-    // CODED_LEFT_RECEIVED = 'l',
-    // CODED_RIGHT_RECEIVED = 'r',
-    // CODED_TICK_RECEIVED = 't',
-    // CODED_READY_RECEIVED = 'z',
-    // CODED_PASS_CONTROL_RECEIVED = 'p'
+    CODED_PASS_CONTROL = 'P'
 } Code;
 
 void code_send(Code code);

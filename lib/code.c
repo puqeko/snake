@@ -3,13 +3,12 @@
 #include "delay.h"
 
 
+// List of legal codes.
 static Code codedOperations[] = {
     CODED_NONE, CODED_UP, CODED_DOWN, CODED_LEFT, CODED_RIGHT, CODED_TICK,
-    CODED_READY, CODED_PASS_CONTROL}; /*CODED_UP_RECEIVED, CODED_DOWN_RECEIVED,
-    CODED_LEFT_RECEIVED, CODED_RIGHT_RECEIVED, CODED_TICK_RECEIVED,
-    CODED_READY_RECEIVED, CODED_PASS_CONTROL_RECEIVED};*/
+    CODED_READY, CODED_PASS_CONTROL};
 
-#define QU_LENGTH 10
+#define QU_LENGTH 10  // Small since we don't expect many messages to back up.
 
 typedef struct queue_s {
     Code messages[QU_LENGTH];
@@ -41,6 +40,11 @@ static Code queue_pop(Queue* qu)
     Code code = qu->messages[qu->tail++];
     qu->tail %= QU_LENGTH;
     return code;
+}
+
+void code_init()
+{
+    ir_uart_init();
 }
 
 
@@ -101,37 +105,23 @@ Code code_get(void)
 
 static bool shouldGiveControl = false;
 
+
 void code_pass_control(void)
 {
-    shouldGiveControl = true;
+    // Wait 5 ms to sync ticks between boards on the
+    // transistion.
+    DELAY_US(5000);
+    code_send(CODED_PASS_CONTROL);
 }
+
 
 void code_update(void)
 {
     if (ir_uart_read_ready_p()) {
         Code message = decode_ir();
-
         queue_push(&messages_in, message);
-        // ir_uart_putc(recevied_ir(message));  // Echo back
-
     } else if (get_num_messages(&messages_out) != 0) {
         Code message = queue_pop(&messages_out);
-
-        // Code receipt = CODED_NONE;
-        // Code expectedBack = recevied_ir(message);
-
-        // Resend
-        // while (receipt != expectedBack) {
-            ir_uart_putc(message);
-            // DELAY_US(1000);
-            // while (!ir_uart_read_ready_p()) continue;  // TODO: Also wait for time.
-            // receipt = decode_ir();
-        // }
-    }
-
-    // wait till qu cleared.
-    if (get_num_messages(&messages_out) == 0 && shouldGiveControl) {
-        ir_uart_putc(CODED_PASS_CONTROL);
-        shouldGiveControl = false;
+        ir_uart_putc(message);
     }
 }

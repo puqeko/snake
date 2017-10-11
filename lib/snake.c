@@ -116,8 +116,8 @@ void snake_update(State* state)
 {
     if (state->gameMode == GAMEMODE_SNAKE) {
         // Update snake position.
-        //run_boris_run(state);
-        state->gameBoard[3][2] = !state->gameBoard[3][2];
+        run_boris_run(state);
+        //state->gameBoard[3][2] = !state->gameBoard[3][2];
     }
     // else do nothing
 }

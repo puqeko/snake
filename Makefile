@@ -17,7 +17,7 @@ all: game.out
 
 
 # Compile: create object files from C source files.
-game.o: ./game.c ./lib/snake.h ./game.h ../../utils/task.h ../../drivers/avr/system.h ./lib/input.h ./lib/board.h ../../drivers/avr/timer.h
+game.o: ./game.c ../../utils/task.h ./lib/snake.h ./lib/input.h ../../drivers/avr/system.h ./game.h ./lib/board.h ../../drivers/avr/timer.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
 task.o: ../../utils/task.c ../../utils/task.h ../../drivers/avr/system.h ../../drivers/avr/timer.h
@@ -29,16 +29,16 @@ timer.o: ../../drivers/avr/timer.c ../../drivers/avr/system.h ../../drivers/avr/
 system.o: ../../drivers/avr/system.c ../../drivers/avr/system.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
-board.o: ./lib/board.c ../../drivers/ledmat.h ./game.h ../../utils/font.h ../../utils/task.h ../../drivers/display.h ../../drivers/avr/pio.h ../../drivers/avr/system.h ../../utils/tinygl.h ./lib/board.h ../../drivers/avr/timer.h
+board.o: ./lib/board.c ../../utils/font.h ../../utils/task.h ../../drivers/ledmat.h ../../drivers/avr/pio.h ../../drivers/display.h ../../drivers/avr/system.h ./game.h ./lib/board.h ../../utils/tinygl.h ../../drivers/avr/timer.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
-tinygl.o: ../../utils/tinygl.c ../../drivers/display.h ../../drivers/avr/system.h ../../utils/font.h ../../utils/tinygl.h
+tinygl.o: ../../utils/tinygl.c ../../drivers/display.h ../../utils/tinygl.h ../../utils/font.h ../../drivers/avr/system.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
-font.o: ../../utils/font.c ../../drivers/avr/system.h ../../utils/font.h
+font.o: ../../utils/font.c ../../utils/font.h ../../drivers/avr/system.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
-display.o: ../../drivers/display.c ../../drivers/ledmat.h ../../drivers/avr/system.h ../../drivers/display.h
+display.o: ../../drivers/display.c ../../drivers/display.h ../../drivers/ledmat.h ../../drivers/avr/system.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
 ledmat.o: ../../drivers/ledmat.c ../../drivers/ledmat.h ../../drivers/avr/pio.h ../../drivers/avr/system.h
@@ -47,31 +47,31 @@ ledmat.o: ../../drivers/ledmat.c ../../drivers/ledmat.h ../../drivers/avr/pio.h 
 pio.o: ../../drivers/avr/pio.c ../../drivers/avr/pio.h ../../drivers/avr/system.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
-snake.o: ./lib/snake.c ../../utils/task.h ./lib/snake.h ../../drivers/avr/system.h ../../drivers/avr/timer.h ./game.h
+snake.o: ./lib/snake.c ../../utils/task.h ./lib/snake.h ../../drivers/avr/system.h ./game.h ../../drivers/avr/timer.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
-input.o: ./lib/input.c ./game.h ../../utils/task.h ../../drivers/navswitch.h ../../drivers/avr/ir_uart.h ./lib/code.h ../../drivers/led.h ../../drivers/avr/system.h ./lib/input.h ../../drivers/avr/timer.h ../../drivers/avr/delay.h
+input.o: ./lib/input.c ./lib/code.h ../../utils/task.h ./lib/input.h ../../drivers/led.h ../../drivers/avr/timer.h ../../drivers/avr/system.h ./game.h ../../drivers/avr/delay.h ../../drivers/navswitch.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
-code.o: ./lib/code.c ../../drivers/avr/ir_uart.h ../../drivers/avr/delay.h ../../drivers/avr/system.h ./lib/code.h
+code.o: ./lib/code.c ./lib/code.h ../../drivers/avr/delay.h ../../drivers/avr/system.h ../../drivers/avr/ir_uart.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
-ir_uart.o: ../../drivers/avr/ir_uart.c ../../drivers/avr/ir_uart.h ../../drivers/avr/pio.h ../../drivers/avr/usart1.h ../../drivers/avr/system.h ../../drivers/avr/timer0.h ../../drivers/avr/delay.h
+ir_uart.o: ../../drivers/avr/ir_uart.c ../../drivers/avr/ir_uart.h ../../drivers/avr/pio.h ../../drivers/avr/timer0.h ../../drivers/avr/usart1.h ../../drivers/avr/system.h ../../drivers/avr/delay.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
-timer0.o: ../../drivers/avr/timer0.c ../../drivers/avr/prescale.h ../../drivers/avr/bits.h ../../drivers/avr/system.h ../../drivers/avr/timer0.h
+timer0.o: ../../drivers/avr/timer0.c ../../drivers/avr/timer0.h ../../drivers/avr/bits.h ../../drivers/avr/system.h ../../drivers/avr/prescale.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
-prescale.o: ../../drivers/avr/prescale.c ../../drivers/avr/prescale.h ../../drivers/avr/system.h
+prescale.o: ../../drivers/avr/prescale.c ../../drivers/avr/system.h ../../drivers/avr/prescale.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
-usart1.o: ../../drivers/avr/usart1.c ../../drivers/avr/system.h ../../drivers/avr/usart1.h
+usart1.o: ../../drivers/avr/usart1.c ../../drivers/avr/usart1.h ../../drivers/avr/system.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
 led.o: ../../drivers/led.c ../../drivers/led.h ../../drivers/avr/pio.h ../../drivers/avr/system.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
-navswitch.o: ../../drivers/navswitch.c ../../drivers/navswitch.h ../../drivers/avr/pio.h ../../drivers/avr/system.h ../../drivers/avr/delay.h
+navswitch.o: ../../drivers/navswitch.c ../../drivers/avr/delay.h ../../drivers/avr/pio.h ../../drivers/avr/system.h ../../drivers/navswitch.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
 game.out: game.o task.o timer.o system.o board.o tinygl.o font.o display.o ledmat.o pio.o snake.o input.o code.o ir_uart.o timer0.o prescale.o usart1.o led.o navswitch.o

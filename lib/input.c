@@ -29,25 +29,21 @@ void read_navswitch_inputs(State* state)
 
     if (navswitch_push_event_p(NAVSWITCH_NORTH)) {
         // north navswitch has been pressed so head updated to up
-        //state->gameBoard[xPos][yPos] = SNAKE_CELL_UP;
-        ir_uart_putc_nocheck(CODED_UP);
-    }
-    if (navswitch_push_event_p(NAVSWITCH_SOUTH)) {
+        state->gameBoard[xPos][yPos] = SNAKE_CELL_UP;
+        code_send(CODED_UP);
+    } else if (navswitch_push_event_p(NAVSWITCH_SOUTH)) {
         // south navswitch has been pressed so head updated to down
-        //state->gameBoard[xPos][yPos] = SNAKE_CELL_DOWN;
-        ir_uart_putc_nocheck(CODED_DOWN);
-    }
-    if (navswitch_push_event_p(NAVSWITCH_WEST)) {
+        state->gameBoard[xPos][yPos] = SNAKE_CELL_DOWN;
+        code_send(CODED_DOWN);
+    } else if (navswitch_push_event_p(NAVSWITCH_WEST)) {
         // west navswitch has been pressed so head updated to left
-        //state->gameBoard[xPos][yPos] = SNAKE_CELL_LEFT;
-        ir_uart_putc_nocheck(CODED_LEFT);
-    }
-    if (navswitch_push_event_p(NAVSWITCH_EAST)) {
+        state->gameBoard[xPos][yPos] = SNAKE_CELL_LEFT;
+        code_send(CODED_LEFT);
+    } else if (navswitch_push_event_p(NAVSWITCH_EAST)) {
         // east navswitch has been pressed so head updated to right
-        //state->gameBoard[xPos][yPos] = SNAKE_CELL_RIGHT;
-        ir_uart_putc_nocheck(CODED_RIGHT);
-    }
-    if (navswitch_push_event_p(NAVSWITCH_PUSH)) {
+        state->gameBoard[xPos][yPos] = SNAKE_CELL_RIGHT;
+        code_send(CODED_RIGHT);
+    } else if (navswitch_push_event_p(NAVSWITCH_PUSH)) {
         code_pass_control();
         state->isInControl = false;
     }
@@ -85,23 +81,22 @@ static void receive_external_input(State* state)
 // TODO: Keep boards in sync.
 {
     if (code_has_message()) {
-        led_set (LED1, 1);
         Code message = code_get();
         int row = state->snakeHead.row;
         int col = state->snakeHead.col;
         
         switch(message) {
             case CODED_UP:
-                //state->gameBoard[row][col] = SNAKE_CELL_DOWN;
+                state->gameBoard[row][col] = SNAKE_CELL_DOWN;
                 break;
             case CODED_DOWN:
-                //state->gameBoard[row][col] = SNAKE_CELL_UP;
+                state->gameBoard[row][col] = SNAKE_CELL_UP;
                 break;
             case CODED_LEFT:
-                //state->gameBoard[row][col] = SNAKE_CELL_RIGHT;
+                state->gameBoard[row][col] = SNAKE_CELL_RIGHT;
                 break;
             case CODED_RIGHT:
-                //state->gameBoard[row][col] = SNAKE_CELL_LEFT;
+                state->gameBoard[row][col] = SNAKE_CELL_LEFT;
                 break;
             case CODED_TICK:
                 controllerUpdateFunc(state);
@@ -109,8 +104,7 @@ static void receive_external_input(State* state)
                 break;
             case CODED_PASS_CONTROL:
                 state->isInControl = true;
-                state->snakeHead.row = 0;
-                state->snakeHead.col = 0;
+                led_set (LED1, true);
                 break;
             case CODED_READY:
             case CODED_NONE:
@@ -118,8 +112,6 @@ static void receive_external_input(State* state)
                 // Ignore bad input for now.
                 break;
         }
-    } else {
-        led_set (LED1, 0);
     }
 }
 
@@ -140,12 +132,12 @@ void input_update_control(State* state)
         controllerUpdateFunc(state);
     }
 
-    //waitOneTick = false;
-
-    //shouldHaveControl = (state->snakeHead.col < GAMEBOARD_COLS_NUM / 2);
-
-    // See above comment.
-    //update_control_status(state);
+    bool shouldHaveControl = (state->snakeHead.col < GAMEBOARD_COLS_NUM / 2);
+    if (!shouldHaveControl && state->isInControl) {
+        code_pass_control();
+        state->isInControl = false;
+        led_set (LED1, false);
+    }
 }
 
 
@@ -169,11 +161,11 @@ void init_as_controller_snake(State* state)
     //previousControlState = true;
 
     // Initalise snake from 2, 0 to 2, 2
-    // state->gameBoard[0][2] = SNAKE_CELL_UP;
-    // state->gameBoard[1][2] = SNAKE_CELL_UP;
-    // state->gameBoard[2][2] = SNAKE_CELL_UP;
-    // state->gameBoard[3][2] = SNAKE_CELL_UP;
-    // state->gameBoard[4][2] = SNAKE_CELL_UP;
+    state->gameBoard[0][2] = SNAKE_CELL_UP;
+    state->gameBoard[1][2] = SNAKE_CELL_UP;
+    state->gameBoard[2][2] = SNAKE_CELL_UP;
+    state->gameBoard[3][2] = SNAKE_CELL_UP;
+    state->gameBoard[4][2] = SNAKE_CELL_UP;
 
     Position head = {0, 2};
     Position tail = {4, 2};
@@ -188,11 +180,11 @@ void init_as_slave_snake(State* state)
     state->isInControl = false;
 
     // Initalise snake mirrored
-    // state->gameBoard[6][7] = SNAKE_CELL_DOWN;
-    // state->gameBoard[5][7] = SNAKE_CELL_DOWN;
-    // state->gameBoard[4][7] = SNAKE_CELL_DOWN;
-    // state->gameBoard[3][7] = SNAKE_CELL_DOWN;
-    // state->gameBoard[2][7] = SNAKE_CELL_DOWN;
+    state->gameBoard[6][7] = SNAKE_CELL_DOWN;
+    state->gameBoard[5][7] = SNAKE_CELL_DOWN;
+    state->gameBoard[4][7] = SNAKE_CELL_DOWN;
+    state->gameBoard[3][7] = SNAKE_CELL_DOWN;
+    state->gameBoard[2][7] = SNAKE_CELL_DOWN;
 
     Position tail = {2, 7};
     Position head = {6, 7};
@@ -214,6 +206,7 @@ void input_update(State* state)
         if (navswitch_push_event_p(NAVSWITCH_PUSH)) {
             state->isReady = true;
             ir_uart_putc(CODED_READY);
+            led_set (LED1, 1);
 
             if (state->isOtherBoardReady) {
                 
@@ -233,7 +226,6 @@ void input_update(State* state)
         if (ir_uart_read_ready_p()) {
             if (decode_ir() == CODED_READY) {
                 state->isOtherBoardReady = true;
-                led_set (LED1, 1);
 
                 if (state->isReady) {
                     state->gameMode = GAMEMODE_SNAKE;
@@ -251,12 +243,6 @@ void input_update(State* state)
 
         if(state->isInControl) {
             read_navswitch_inputs(state);
-
-            bool shouldHaveControl = (state->snakeHead.col < GAMEBOARD_COLS_NUM / 2);
-            if (!shouldHaveControl) {
-                code_pass_control();
-                state->isInControl = false;
-            }
         } else {
             // Receive input from other board if not in control.
             receive_external_input(state);
