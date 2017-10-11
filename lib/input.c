@@ -103,7 +103,7 @@ void input_update_control(State* state)
 {   
     if (state->gameMode == GAMEMODE_SNAKE && state->isInControl) {
         // Clock from this board as we are in control.
-        code_send(CODED_TICK);  // Clock the other boards snake update function.
+        code_send(CODED_TICK);
         controllerUpdateFunc(state);
     }
 
