@@ -89,6 +89,8 @@ void input_update_control_status(State* state)
 // update if we are in control and tell the other board. Signal LED
 // to indicate which board is in control.
 {
+    // For other side control.
+    // bool shouldHaveControl = (state->snakeHead.col >= GAMEBOARD_COLS_NUM / 2);
     bool shouldHaveControl = (state->snakeHead.col < GAMEBOARD_COLS_NUM / 2);
     if (!shouldHaveControl && state->isInControl) {
         code_pass_control();
