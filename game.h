@@ -16,7 +16,7 @@
 // board_update shows only one row at a time so we require it to run
 // LEDMAT_ROWS_NUM times at the desired frame rate of 100 Hz.
 #define TINYGL_TEXT_SPEED 15
-#define DISP_ROWS_UPDATE_FREQ (200 * GAMEBOARD_ROWS_NUM)
+#define DISP_ROWS_UPDATE_FREQ (500 * GAMEBOARD_ROWS_NUM)
 #define TINYGL_UPDATE_RATE (DISP_ROWS_UPDATE_FREQ) // this may be incorrect for tinygl, might correct
 
 
@@ -57,6 +57,7 @@ struct state_s {
     uint8_t gameBoard[GAMEBOARD_ROWS_NUM][GAMEBOARD_COLS_NUM]; 
     uint8_t snakeLength;
     uint8_t snakeTrueLength;
+    uint8_t snakeStartLength;
     Position snakeHead;
     Position snakeTail;
     Position food;

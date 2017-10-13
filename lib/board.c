@@ -40,10 +40,11 @@ void change_state_to_end(State* state)
 {
     state->gameMode = GAMEMODE_END;
     tinygl_clear();
-    char outText[] = " SCORE: 00! PUST RESET";
-    outText[8] = '0' + state->snakeTrueLength % 10;
-    outText[7] = '0' + state->snakeTrueLength / 10;
+    char outText[] = " SCORE:00! PUSH RESET";
+    outText[8] = '0' + (state->snakeTrueLength - state->snakeStartLength) % 10;
+    outText[7] = '0' + (state->snakeTrueLength - state->snakeStartLength) / 10;
     tinygl_text(outText);
+    led_set(LED1, false);
 }
 
 void reset_state_to_title(State* state)

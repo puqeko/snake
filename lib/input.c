@@ -160,7 +160,8 @@ void init_as_controller_snake(State* state)
     state->snakeTail = tail;
 
     state->snakeLength = 5;
-    state->snakeTrueLength = 1;
+    state->snakeTrueLength = 1;  // Make it grow to 5.
+    state->snakeStartLength = 5;
 }
 
 void init_as_slave_snake(State* state)
@@ -180,7 +181,8 @@ void init_as_slave_snake(State* state)
     state->snakeTail = tail;
 
     state->snakeLength = 5;
-    state->snakeTrueLength = 1;
+    state->snakeTrueLength = 1;  // Make it grow to 5.
+    state->snakeStartLength = 5;
 
     srand(TCNT1);  // initalise from timer value.
     while (true) {

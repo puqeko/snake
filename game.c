@@ -15,6 +15,11 @@
 #define DISPLAY_UPDATE_RATE (TASK_RATE / DISP_ROWS_UPDATE_FREQ)
 
 
+// TODO:
+// Cannot go back on itself (i.e. opp direction)
+// Communicate that gamemode changed to 
+
+
 int main (void)
 {
     system_init ();
