@@ -10,8 +10,8 @@
 
 #include "input.h"
 #include "navswitch.h"
-#include "ir_uart.h"
 #include "delay.h"
+#include "ir_uart.h"
 #include "led.h"
 #include "code.h"
 
@@ -22,70 +22,40 @@ void read_navswitch_inputs(State* state)
 // Poll the navswitch and update the direction of the head of the snake accordingly.
 // Send instructions to other board as well.
 {
-    navswitch_update();
-    
-    int8_t xPos = state->snakeHead.row;
-    int8_t yPos = state->snakeHead.col;
+    int8_t row = state->snakeHead.row;
+    int8_t col = state->snakeHead.col;
 
     if (navswitch_push_event_p(NAVSWITCH_NORTH)) {
         // north navswitch has been pressed so head updated to up
-        state->gameBoard[xPos][yPos] = SNAKE_CELL_UP;
-        ir_uart_putc_nocheck(CODED_UP);
-    }
-    if (navswitch_push_event_p(NAVSWITCH_SOUTH)) {
+        state->gameBoard[row][col] = SNAKE_CELL_UP;
+        code_send(CODED_UP);
+    } else if (navswitch_push_event_p(NAVSWITCH_SOUTH)) {
         // south navswitch has been pressed so head updated to down
-        state->gameBoard[xPos][yPos] = SNAKE_CELL_DOWN;
-        ir_uart_putc_nocheck(CODED_DOWN);
-    }
-    if (navswitch_push_event_p(NAVSWITCH_WEST)) {
+        state->gameBoard[row][col] = SNAKE_CELL_DOWN;
+        code_send(CODED_DOWN);
+    } else if (navswitch_push_event_p(NAVSWITCH_WEST)) {
         // west navswitch has been pressed so head updated to left
-        state->gameBoard[xPos][yPos] = SNAKE_CELL_LEFT;
-        ir_uart_putc_nocheck(CODED_LEFT);
-    }
-    if (navswitch_push_event_p(NAVSWITCH_EAST)) {
+        state->gameBoard[row][col] = SNAKE_CELL_LEFT;
+        code_send(CODED_LEFT);
+    } else if (navswitch_push_event_p(NAVSWITCH_EAST)) {
         // east navswitch has been pressed so head updated to right
-        state->gameBoard[xPos][yPos] = SNAKE_CELL_RIGHT;
-        ir_uart_putc_nocheck(CODED_RIGHT);
+        state->gameBoard[row][col] = SNAKE_CELL_RIGHT;
+        code_send(CODED_RIGHT);
     }
 }
-
-
-// static void update_control_status(State* state)
-// // This board is in control of the snake when the head is on
-// // the first half of this board.
-// {
-//     // bool shouldHaveControl = (state->snakeHead.col < GAMEBOARD_COLS_NUM / 2);
-//     // if (!shouldHaveControl && state->isInControl && !waitOneTick) {
-//     //     // while (!ir_uart_write_ready_p()) continue;
-//     //     // ir_uart_putc(CODED_PASS_CONTROL);
-//     //     // while (!ir_uart_read_ready_p()) continue;
-//     //     // ir_uart_getc();  // TODO: retry on fail.
-//     //     // state->isInControl = false;
-//     // }
-//     // if (!waitOneTick && waiting) {
-//     //     state->isInControl = true;
-//     //     waiting = false;
-//     // } else if (!waiting) {
-//     //     if (shouldHaveControl && !previousControlState) {
-//     //         waitOneTick = true;
-//     //         waiting = true;
-//     //     } else if (!shouldHaveControl && previousControlState) {
-//     //         state->isInControl = false;
-//     //     }
-//     // }
-//     //  previousControlState = shouldHaveControl;
-// }
 
 
 static void receive_external_input(State* state)
 // TODO: Keep boards in sync.
 {
     if (code_has_message()) {
-        led_set (LED1, 1);
         Code message = code_get();
         int row = state->snakeHead.row;
         int col = state->snakeHead.col;
         
+        // Note: Directions have been reversed because the snake
+        // model is mirrorred on the other board relative to this one.
+        // Hence, a movement up is actually down, etc.
         switch(message) {
             case CODED_UP:
                 state->gameBoard[row][col] = SNAKE_CELL_DOWN;
@@ -101,43 +71,45 @@ static void receive_external_input(State* state)
                 break;
             case CODED_TICK:
                 controllerUpdateFunc(state);
-                //update_control_status(state);
                 break;
             case CODED_PASS_CONTROL:
-                //state->isInControl = true;
+                state->isInControl = true;
+                led_set (LED1, true);
                 break;
-            case CODED_READY:
-            case CODED_NONE:
             default:
-                // Ignore bad input for now.
+                // Ignore bad input as noise.
                 break;
         }
-    } else {
-        led_set (LED1, 0);
+    }
+}
+
+
+void input_update_control_status(State* state)
+// Check if we need to give control to the other board. If so, then
+// update if we are in control and tell the other board. Signal LED
+// to indicate which board is in control.
+{
+    // For other side control.
+    // bool shouldHaveControl = (state->snakeHead.col >= GAMEBOARD_COLS_NUM / 2);
+    bool shouldHaveControl = (state->snakeHead.col < GAMEBOARD_COLS_NUM / 2);
+    if (!shouldHaveControl && state->isInControl) {
+        code_pass_control();
+        state->isInControl = false;
+        led_set (LED1, false);
     }
 }
 
 
 // 2 Hz
 void input_update_control(State* state)
-{
-    // Ensure control status is correct when we enter and leave update control
-    // so that changes stay synced to the 2 Hz cycle.
-    //update_control_status(state);
-
+{   
     if (state->gameMode == GAMEMODE_SNAKE && state->isInControl) {
         // Clock from this board as we are in control.
         code_send(CODED_TICK);
-        // ir_uart_putc(CODED_TICK);
-        // while (!ir_uart_read_ready_p()) continue;
-        // ir_uart_getc();  // CODED_TICK_RECEIVED. TODO: retry on fail.
         controllerUpdateFunc(state);
     }
 
-    //waitOneTick = false;
-
-    // See above comment.
-    //update_control_status(state);
+    input_update_control_status(state);  // look ahead
 }
 
 
@@ -145,15 +117,16 @@ void input_init(void)
 // TODO: Configure navswitch etc. 
 {
     navswitch_init();
-    ir_uart_init();
+    code_init();
     led_init();
-    led_set(LED1, 0);
+    led_set(LED1, false);
 }
 
 
 void input_set_controller(input_controller_update_func_t func) {
     controllerUpdateFunc = func;
 }
+
 
 void init_as_controller_snake(State* state)
 {
@@ -195,53 +168,60 @@ void init_as_slave_snake(State* state)
 }
 
 
+void input_check_for_sync(State* state)
+{
+    if (navswitch_push_event_p(NAVSWITCH_PUSH)) {
+        
+        state->isReady = true;  // This board is ready.
+
+        if (state->isOtherBoardReady) {
+            // Wait 1 ms for transmission. See ir_uart.c
+            // We need to send instantly for the wait to work.
+            code_send_now(CODED_READY);
+            DELAY_US (1000);
+            code_clear_messages();
+
+            state->gameMode = GAMEMODE_SNAKE;
+
+            // Reset for next time.
+            state->isOtherBoardReady = state->isReady = false;
+            init_as_slave_snake(state);
+            led_set (LED1, 0);
+        } else {
+            code_send_now(CODED_READY);
+            led_set (LED1, 1);  // Signal that we are waiting for the other board.
+        }
+    }
+
+    // Message from other board.
+    if (code_has_message() && code_get() == CODED_READY) {
+        state->isOtherBoardReady = true;
+
+        if (state->isReady) {
+            code_clear_messages();
+
+            state->gameMode = GAMEMODE_SNAKE;
+
+            // Reset for next time.
+            state->isOtherBoardReady = state->isReady = false;
+            init_as_controller_snake(state);
+        }
+    }
+}
+
+
 // 50 Hz
 void input_update(State* state)
 // TODO: Poll for navswitch and button inputs.
 {
+    navswitch_update();
+    code_update();  // Sync with other board.
+
     if (state->gameMode == GAMEMODE_TITLE) {
-
-        navswitch_update();
-
-        if (navswitch_push_event_p(NAVSWITCH_PUSH)) {
-            state->isReady = true;
-            ir_uart_putc(CODED_READY);
-
-            if (state->isOtherBoardReady) {
-                
-                DELAY_US (1000);  // Wait 1 ms for transmission. See ir_uart.c
-                if (ir_uart_read_ready_p()) ir_uart_getc();
-
-                state->gameMode = GAMEMODE_SNAKE;
-
-                // Reset for next time.
-                state->isReady = false;
-                state->isOtherBoardReady = false;
-                init_as_slave_snake(state);
-                led_set (LED1, 0);
-            }
-        }
-
-        if (ir_uart_read_ready_p()) {
-            if (decode_ir() == CODED_READY) {
-                state->isOtherBoardReady = true;
-                led_set (LED1, 1);
-
-                if (state->isReady) {
-                    state->gameMode = GAMEMODE_SNAKE;
-
-                    // Reset for next time.
-                    state->isReady = false;
-                    state->isOtherBoardReady = false;
-                    init_as_controller_snake(state);
-                }
-            }
-        }
-
+        input_check_for_sync(state);
     } else if (state->gameMode == GAMEMODE_SNAKE) {
-        code_update();
-
         if(state->isInControl) {
+            // Get input from this board.
             read_navswitch_inputs(state);
         } else {
             // Receive input from other board if not in control.
