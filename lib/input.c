@@ -11,12 +11,10 @@
 #include "input.h"
 #include "navswitch.h"
 #include "delay.h"
-#include "ir_uart.h"
 #include "led.h"
 #include "code.h"
 
 static input_controller_update_func_t controllerUpdateFunc;
-
 
 void read_navswitch_inputs(State* state)
 // Poll the navswitch and update the direction of the head of the snake accordingly.
@@ -134,18 +132,19 @@ void init_as_controller_snake(State* state)
     //previousControlState = true;
 
     // Initalise snake from 2, 0 to 2, 2
-    state->gameBoard[0][2] = SNAKE_CELL_UP;
-    state->gameBoard[1][2] = SNAKE_CELL_UP;
-    state->gameBoard[2][2] = SNAKE_CELL_UP;
-    state->gameBoard[3][2] = SNAKE_CELL_UP;
-    state->gameBoard[4][2] = SNAKE_CELL_UP;
+    state->gameBoard[0][2] = SNAKE_CELL_DOWN;
+    // state->gameBoard[1][2] = SNAKE_CELL_UP;
+    // state->gameBoard[2][2] = SNAKE_CELL_UP;
+    // state->gameBoard[3][2] = SNAKE_CELL_UP;
+    // state->gameBoard[4][2] = SNAKE_CELL_UP;
 
     Position head = {0, 2};
-    Position tail = {4, 2};
+    Position tail = {0, 2};
     state->snakeHead = head;
     state->snakeTail = tail;
 
     state->snakeLength = 5;
+    state->snakeTrueLength = 1;
 }
 
 void init_as_slave_snake(State* state)
@@ -153,60 +152,64 @@ void init_as_slave_snake(State* state)
     state->isInControl = false;
 
     // Initalise snake mirrored
-    state->gameBoard[6][7] = SNAKE_CELL_DOWN;
-    state->gameBoard[5][7] = SNAKE_CELL_DOWN;
-    state->gameBoard[4][7] = SNAKE_CELL_DOWN;
-    state->gameBoard[3][7] = SNAKE_CELL_DOWN;
-    state->gameBoard[2][7] = SNAKE_CELL_DOWN;
+    state->gameBoard[6][7] = SNAKE_CELL_UP;
+    // state->gameBoard[5][7] = SNAKE_CELL_DOWN;
+    // state->gameBoard[4][7] = SNAKE_CELL_DOWN;
+    // state->gameBoard[3][7] = SNAKE_CELL_DOWN;
+    // state->gameBoard[2][7] = SNAKE_CELL_DOWN;
 
-    Position tail = {2, 7};
+    Position tail = {6, 7};
     Position head = {6, 7};
     state->snakeHead = head;
     state->snakeTail = tail;
 
     state->snakeLength = 5;
+    state->snakeTrueLength = 1;
 }
 
 
 void input_check_for_sync(State* state)
 {
     if (navswitch_push_event_p(NAVSWITCH_PUSH)) {
+
+        state->gameMode = GAMEMODE_SNAKE;
+        init_as_controller_snake(state);
         
-        state->isReady = true;  // This board is ready.
+        // state->isReady = true;  // This board is ready.
 
-        if (state->isOtherBoardReady) {
-            // Wait 1 ms for transmission. See ir_uart.c
-            // We need to send instantly for the wait to work.
-            code_send_now(CODED_READY);
-            DELAY_US (1000);
-            code_clear_messages();
+        // if (state->isOtherBoardReady) {
+        //     // Wait 1 ms for transmission. See ir_uart.c
+        //     // We need to send instantly for the wait to work.
+        //     code_send_now(CODED_READY);
+        //     DELAY_US (1000);
+        //     code_clear_messages();
 
-            state->gameMode = GAMEMODE_SNAKE;
+        //     state->gameMode = GAMEMODE_SNAKE;
 
-            // Reset for next time.
-            state->isOtherBoardReady = state->isReady = false;
-            init_as_slave_snake(state);
-            led_set (LED1, 0);
-        } else {
-            code_send_now(CODED_READY);
-            led_set (LED1, 1);  // Signal that we are waiting for the other board.
-        }
+        //     // Reset for next time.
+        //     state->isOtherBoardReady = state->isReady = false;
+        //     init_as_slave_snake(state);
+        //     led_set (LED1, 0);
+        // } else {
+        //     code_send_now(CODED_READY);
+        //     led_set (LED1, 1);  // Signal that we are waiting for the other board.
+        // }
     }
 
     // Message from other board.
-    if (code_has_message() && code_get() == CODED_READY) {
-        state->isOtherBoardReady = true;
+    // if (code_has_message() && code_get() == CODED_READY) {
+    //     state->isOtherBoardReady = true;
 
-        if (state->isReady) {
-            code_clear_messages();
+    //     if (state->isReady) {
+    //         code_clear_messages();
 
-            state->gameMode = GAMEMODE_SNAKE;
+    //         state->gameMode = GAMEMODE_SNAKE;
 
-            // Reset for next time.
-            state->isOtherBoardReady = state->isReady = false;
-            init_as_controller_snake(state);
-        }
-    }
+    //         // Reset for next time.
+    //         state->isOtherBoardReady = state->isReady = false;
+    //         init_as_controller_snake(state);
+    //     }
+    // }
 }
 
 

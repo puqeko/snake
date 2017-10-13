@@ -63,7 +63,10 @@ static void run_boris_run(State* state)
 
     if (will_eat_food(state, head)) {
         state->snakeLength++;
-    } else {
+    }
+    
+    // Grow at the start of the game.
+    if (state->snakeLength == state->snakeTrueLength) {
         // Move tail pointer.
         Position oldTail = state->snakeTail;
         Position tail = get_next_position(state, oldTail);
@@ -71,6 +74,8 @@ static void run_boris_run(State* state)
         // Remove previous cell.
         state->gameBoard[oldTail.row][oldTail.col] = SNAKE_CELL_EMPTY;
         state->snakeTail = tail;  // Update to new position.
+    } else {
+        state->snakeTrueLength++;
     }
 
     // Update head position.
@@ -109,6 +114,25 @@ void snake_init(State* state)
 }
 
 
+#include <stdlib.h>
+
+void update_food(State* state)
+{
+    if (state->gameBoard[state->food.row][state->food.col] != SNAKE_CELL_FOOD) {
+        while (true) {
+            int row = rand() % 7;
+            int col = rand() % 5;
+            if (state->gameBoard[row][col] == SNAKE_CELL_EMPTY) {
+                state->gameBoard[row][col] = SNAKE_CELL_FOOD;
+                state->food.col = col;
+                state->food.row = row;
+                break;
+            }
+        }
+    }
+}
+
+
 void snake_update(State* state)
 // Update positions of the Boris's LED dot positions. If the head
 // position moves to an existing LED point that's on,
@@ -117,6 +141,7 @@ void snake_update(State* state)
     if (state->gameMode == GAMEMODE_SNAKE) {
         // Update snake position.
         run_boris_run(state);
+        update_food(state);
         //state->gameBoard[3][2] = !state->gameBoard[3][2];
     }
     // else do nothing

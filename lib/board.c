@@ -69,6 +69,7 @@ void board_init(void)
 void board_column(const uint8_t patternArray[GAMEBOARD_ROWS_NUM][GAMEBOARD_COLS_NUM], uint8_t currentColumn)
 // Draw patternArray to the LED matrix.
 {
+    static int foodToggle = 0;
     // TODO: Depending on the board this function is called by, it needs
     // to take its half of the 7x10 matrix or rather, have its half of the
     // matrix passed into this function.
@@ -84,7 +85,12 @@ void board_column(const uint8_t patternArray[GAMEBOARD_ROWS_NUM][GAMEBOARD_COLS_
 
         // The rows are active low.
         if (patternArray[currentRow][currentColumn] != SNAKE_CELL_EMPTY) {
-            pio_output_low(ledmatRows[currentRow]);
+            if (patternArray[currentRow][currentColumn] == SNAKE_CELL_FOOD && foodToggle++) {
+                pio_output_high(ledmatRows[currentRow]);
+                foodToggle %= 5;
+            } else {
+                pio_output_low(ledmatRows[currentRow]);
+            }
         } else {
             pio_output_high(ledmatRows[currentRow]);
         }
