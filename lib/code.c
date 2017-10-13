@@ -27,7 +27,7 @@
 // List of legal codes based off the enum defined in code.h.
 static Code codedOperations[] = {
     CODED_NONE, CODED_UP, CODED_DOWN, CODED_LEFT, CODED_RIGHT,
-    CODED_TICK, CODED_READY, CODED_PASS_CONTROL};
+    CODED_TICK, CODED_READY, CODED_PASS_CONTROL, CODED_EAT};
 
 static bool didSendNow = false;  // For urgent messages.
 

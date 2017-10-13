@@ -18,4 +18,10 @@ void board_init(void);
 // Show the snake on the LED matrix
 void board_update(State* state);
 
+void change_state_to_snake(State* state);
+
+void change_state_to_end(State* state);
+
+void reset_state_to_title(State* state);
+
 #endif

@@ -19,7 +19,8 @@ typedef enum CODED_CHARS {
     CODED_RIGHT = 'R',
     CODED_TICK = 'T',
     CODED_READY = 'Z',
-    CODED_PASS_CONTROL = 'P'
+    CODED_PASS_CONTROL = 'P',
+    CODED_EAT = 'E'
 } Code;
 
 

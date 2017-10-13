@@ -8,6 +8,7 @@
 // Editied 01-10-17
 
 #include "snake.h"
+#include "code.h"
 
 static Position get_next_position(State* state, Position currHeadPos) 
 // Takes the head position of the snake and determines its next position depending on whether it's an
@@ -36,17 +37,18 @@ static bool will_self_intersect(State* state, Position nextHeadPos)
 // Returns true if the next head position is already occupied by an enum other than SNAKE_CELL_EMPTY
 {
     return state->gameBoard[nextHeadPos.row][nextHeadPos.col] != SNAKE_CELL_EMPTY &&
-           state->gameBoard[nextHeadPos.row][nextHeadPos.col] != SNAKE_CELL_FOOD;
+           state->gameBoard[nextHeadPos.row][nextHeadPos.col] != SNAKE_CELL_FOOD &&
+           nextHeadPos.row != state->snakeTail.row && nextHeadPos.col != state->snakeTail.col;
 }
 
 
-static bool will_eat_food(State* state, Position head)
+static bool will_eat_food(State* state, Position nextHeadPos)
 // Return true if when the snakes head moves in direction then it
 // will consume food. Boris will be happy (and slowly becomes obese).
 {
     // If moving snake head in current direction will create intersect with 
     // then return true.
-    return state->gameBoard[head.row][head.col] == SNAKE_CELL_FOOD;
+    return state->gameBoard[nextHeadPos.row][nextHeadPos.col] == SNAKE_CELL_FOOD;
 }
 
 
@@ -57,12 +59,14 @@ static void run_boris_run(State* state)
     Position head = get_next_position(state, oldHead);
 
     if (will_self_intersect(state, head)) {
-        state->gameMode = GAMEMODE_END;
+        //state->gameMode = GAMEMODE_END;
+        state->beginEnd(state);
         return;  // We are done here.
     }
 
     if (will_eat_food(state, head)) {
         state->snakeLength++;
+        code_send(CODED_EAT);
     }
     
     // Grow at the start of the game.
@@ -87,9 +91,9 @@ static void run_boris_run(State* state)
 
 void snake_init(State* state)
 {
-
     // state->isInControl = true;
-    state->gameMode = GAMEMODE_TITLE;
+    // state->gameMode = GAMEMODE_TITLE;
+    
 
     // state->isReady = false;
     // state->isOtherBoardReady = false;
@@ -114,25 +118,6 @@ void snake_init(State* state)
 }
 
 
-#include <stdlib.h>
-
-void update_food(State* state)
-{
-    if (state->gameBoard[state->food.row][state->food.col] != SNAKE_CELL_FOOD) {
-        while (true) {
-            int row = rand() % 7;
-            int col = rand() % 5;
-            if (state->gameBoard[row][col] == SNAKE_CELL_EMPTY) {
-                state->gameBoard[row][col] = SNAKE_CELL_FOOD;
-                state->food.col = col;
-                state->food.row = row;
-                break;
-            }
-        }
-    }
-}
-
-
 void snake_update(State* state)
 // Update positions of the Boris's LED dot positions. If the head
 // position moves to an existing LED point that's on,
@@ -141,7 +126,6 @@ void snake_update(State* state)
     if (state->gameMode == GAMEMODE_SNAKE) {
         // Update snake position.
         run_boris_run(state);
-        update_food(state);
         //state->gameBoard[3][2] = !state->gameBoard[3][2];
     }
     // else do nothing

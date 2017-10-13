@@ -37,21 +37,26 @@ void change_state_to_snake(State* state)
 void change_state_to_end(State* state)
 // Changes gamemode to end and changes the string to "Game over!"
 {
-    char* endString = "Game over!";
     state->gameMode = GAMEMODE_END;
-    state->gameModeString = endString;
-    tinygl_text(state->gameModeString);
+    tinygl_clear();
+    tinygl_text("GAME OVER!");
 }
 
 void reset_state_to_title(State* state)
 // Reset to the back to the title screen 
 {
     state->gameMode = GAMEMODE_TITLE;
+
+    // clear rows
     for (int i = 0; i < GAMEBOARD_ROWS_NUM; i++) for (int j = 0; j < GAMEBOARD_COLS_NUM; j++) {
         state->gameBoard[i][j] = SNAKE_CELL_EMPTY;
     }
+    tinygl_clear();
+    led_set (LED1, 0);
+    tinygl_text("SNAKE: PUSH TO START");
     //snake_init(state); // Reinitialise the snake information
 }
+
 
 void board_init(void)
 // Configure LED display. Also initialises tinygl to run at the display update rate (called tinygl rate), 
@@ -62,8 +67,6 @@ void board_init(void)
     tinygl_font_set(&font5x7_1); 
     tinygl_text_speed_set(TINYGL_TEXT_SPEED);
     tinygl_text_mode_set(TINYGL_TEXT_MODE_SCROLL);
-    char* titleString = "SNAKE";
-    tinygl_text(titleString); // setting the title screen text
 }
 
 void board_column(const uint8_t patternArray[GAMEBOARD_ROWS_NUM][GAMEBOARD_COLS_NUM], uint8_t currentColumn)

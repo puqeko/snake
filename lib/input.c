@@ -13,6 +13,8 @@
 #include "delay.h"
 #include "led.h"
 #include "code.h"
+#include <stdlib.h>
+#include <avr/io.h>
 
 static input_controller_update_func_t controllerUpdateFunc;
 
@@ -74,6 +76,20 @@ static void receive_external_input(State* state)
                 state->isInControl = true;
                 led_set (LED1, true);
                 break;
+            case CODED_EAT:
+                state->snakeLength++;
+                while (true) {
+                    int row = rand() % 7;
+                    int col = rand() % 5;
+        
+                    if (state->gameBoard[row][col] == SNAKE_CELL_EMPTY) {
+                        state->gameBoard[row][col] = SNAKE_CELL_FOOD;
+                        state->food.col = col;
+                        state->food.row = row;
+                        break;
+                    }
+                }
+                break;
             default:
                 // Ignore bad input as noise.
                 break;
@@ -103,8 +119,8 @@ void input_update_control(State* state)
 {   
     if (state->gameMode == GAMEMODE_SNAKE && state->isInControl) {
         // Clock from this board as we are in control.
-        code_send(CODED_TICK);
         controllerUpdateFunc(state);
+        code_send(CODED_TICK);
     }
 
     input_update_control_status(state);  // look ahead
@@ -165,6 +181,19 @@ void init_as_slave_snake(State* state)
 
     state->snakeLength = 5;
     state->snakeTrueLength = 1;
+
+    srand(TCNT1);  // initalise from timer value.
+    while (true) {
+        int row = rand() % 7;
+        int col = rand() % 5;
+
+        if (state->gameBoard[row][col] == SNAKE_CELL_EMPTY) {
+            state->gameBoard[row][col] = SNAKE_CELL_FOOD;
+            state->food.col = col;
+            state->food.row = row;
+            break;
+        }
+    }
 }
 
 
@@ -172,44 +201,46 @@ void input_check_for_sync(State* state)
 {
     if (navswitch_push_event_p(NAVSWITCH_PUSH)) {
 
-        state->gameMode = GAMEMODE_SNAKE;
-        init_as_controller_snake(state);
+        // state->gameMode = GAMEMODE_SNAKE;
+        // init_as_controller_snake(state);
         
-        // state->isReady = true;  // This board is ready.
+        state->isReady = true;  // This board is ready.
 
-        // if (state->isOtherBoardReady) {
-        //     // Wait 1 ms for transmission. See ir_uart.c
-        //     // We need to send instantly for the wait to work.
-        //     code_send_now(CODED_READY);
-        //     DELAY_US (1000);
-        //     code_clear_messages();
+        if (state->isOtherBoardReady) {
+            // Wait 1 ms for transmission. See ir_uart.c
+            // We need to send instantly for the wait to work.
+            code_send_now(CODED_READY);
+            DELAY_US (1000);
+            code_clear_messages();
 
-        //     state->gameMode = GAMEMODE_SNAKE;
+            //state->gameMode = GAMEMODE_SNAKE;
+            state->beginSnake(state);
 
-        //     // Reset for next time.
-        //     state->isOtherBoardReady = state->isReady = false;
-        //     init_as_slave_snake(state);
-        //     led_set (LED1, 0);
-        // } else {
-        //     code_send_now(CODED_READY);
-        //     led_set (LED1, 1);  // Signal that we are waiting for the other board.
-        // }
+            // Reset for next time.
+            state->isOtherBoardReady = state->isReady = false;
+            init_as_slave_snake(state);
+            led_set (LED1, 0);
+        } else {
+            code_send_now(CODED_READY);
+            led_set (LED1, 1);  // Signal that we are waiting for the other board.
+        }
     }
 
     // Message from other board.
-    // if (code_has_message() && code_get() == CODED_READY) {
-    //     state->isOtherBoardReady = true;
+    if (code_has_message() && code_get() == CODED_READY) {
+        state->isOtherBoardReady = true;
 
-    //     if (state->isReady) {
-    //         code_clear_messages();
+        if (state->isReady) {
+            code_clear_messages();
 
-    //         state->gameMode = GAMEMODE_SNAKE;
+            //state->gameMode = GAMEMODE_SNAKE;
+            state->beginSnake(state);
 
-    //         // Reset for next time.
-    //         state->isOtherBoardReady = state->isReady = false;
-    //         init_as_controller_snake(state);
-    //     }
-    // }
+            // Reset for next time.
+            state->isOtherBoardReady = state->isReady = false;
+            init_as_controller_snake(state);
+        }
+    }
 }
 
 
@@ -229,6 +260,10 @@ void input_update(State* state)
         } else {
             // Receive input from other board if not in control.
             receive_external_input(state);
+        }
+    } else if (state->gameMode == GAMEMODE_END) {
+        if (navswitch_push_event_p(NAVSWITCH_PUSH)) {
+            state->beginTitle(state);
         }
     }
 }

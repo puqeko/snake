@@ -45,8 +45,10 @@ typedef struct position_s {
 } Position;
 
 
+typedef struct state_s State;
+
 // Game state passed around to all functions.
-typedef struct state_s {
+struct state_s {
     int gameMode;
     bool isInControl;
     bool isOtherBoardReady;
@@ -59,7 +61,9 @@ typedef struct state_s {
     Position snakeTail;
     Position food;
     // Initialise the game mode string as title screen string
-    char* gameModeString;
-} State;
+    void (* beginSnake)(State* state);
+    void (* beginTitle)(State* state);
+    void (* beginEnd)(State* state);
+};
 
 #endif

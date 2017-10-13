@@ -30,10 +30,13 @@ int main (void)
         .snakeLength = 0, // Boris starts at this length
         .snakeHead = {},  // Position 0, 0
         .snakeTail = {},  // Position 0, 0
-        .gameModeString = "SNAKE - Push to start"
+        .beginEnd = change_state_to_end,
+        .beginTitle = reset_state_to_title,
+        .beginSnake = change_state_to_snake
     };
 
     snake_init(&state);
+    state.beginTitle(&state);
 
     // Array of tasks for task scheduler to run. The tasks share,
     // a reference to the same state object.
