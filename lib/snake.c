@@ -36,9 +36,15 @@ static Position get_next_position(State* state, Position currHeadPos)
 static bool will_self_intersect(State* state, Position nextHeadPos) 
 // Returns true if the next head position is already occupied by an enum other than SNAKE_CELL_EMPTY
 {
-    return state->gameBoard[nextHeadPos.row][nextHeadPos.col] != SNAKE_CELL_EMPTY &&
-           state->gameBoard[nextHeadPos.row][nextHeadPos.col] != SNAKE_CELL_FOOD &&
-           nextHeadPos.row != state->snakeTail.row && nextHeadPos.col != state->snakeTail.col;
+    if (state->gameBoard[nextHeadPos.row][nextHeadPos.col] != SNAKE_CELL_EMPTY &&
+        state->gameBoard[nextHeadPos.row][nextHeadPos.col] != SNAKE_CELL_FOOD) {
+        if (nextHeadPos.row == state->snakeTail.row && nextHeadPos.col == state->snakeTail.col &&
+            state->snakeLength == state->snakeTrueLength) {
+            return false;
+        }
+        return true;
+    }
+    return false;
 }
 
 

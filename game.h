@@ -15,7 +15,7 @@
 
 // board_update shows only one row at a time so we require it to run
 // LEDMAT_ROWS_NUM times at the desired frame rate of 100 Hz.
-#define TINYGL_TEXT_SPEED 10
+#define TINYGL_TEXT_SPEED 15
 #define DISP_ROWS_UPDATE_FREQ (200 * GAMEBOARD_ROWS_NUM)
 #define TINYGL_UPDATE_RATE (DISP_ROWS_UPDATE_FREQ) // this may be incorrect for tinygl, might correct
 

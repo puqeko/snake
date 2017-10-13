@@ -9,7 +9,8 @@
 #include "pio.h"
 #include "ledmat.h"
 #include "tinygl.h"
-#include "font5x7_1.h"
+#include "font3x5_1.h"
+#include "led.h"
 
 
 // Define PIO pins driving LED matrix rows.
@@ -39,7 +40,10 @@ void change_state_to_end(State* state)
 {
     state->gameMode = GAMEMODE_END;
     tinygl_clear();
-    tinygl_text("GAME OVER!");
+    char outText[] = " SCORE: 00! PUST RESET";
+    outText[8] = '0' + state->snakeTrueLength % 10;
+    outText[7] = '0' + state->snakeTrueLength / 10;
+    tinygl_text(outText);
 }
 
 void reset_state_to_title(State* state)
@@ -53,7 +57,7 @@ void reset_state_to_title(State* state)
     }
     tinygl_clear();
     led_set (LED1, 0);
-    tinygl_text("SNAKE: PUSH TO START");
+    tinygl_text(" SNAKE: PUSH START");
     //snake_init(state); // Reinitialise the snake information
 }
 
@@ -64,8 +68,9 @@ void board_init(void)
 {
     ledmat_init();
     tinygl_init(TINYGL_UPDATE_RATE);
-    tinygl_font_set(&font5x7_1); 
+    tinygl_font_set(&font3x5_1); 
     tinygl_text_speed_set(TINYGL_TEXT_SPEED);
+    tinygl_text_dir_set(TINYGL_TEXT_DIR_ROTATE);
     tinygl_text_mode_set(TINYGL_TEXT_MODE_SCROLL);
 }
 
