@@ -9,7 +9,7 @@ import os
 import datetime
 
 target = 'game.c'
-search_paths = ['../../drivers/', '../../drivers/avr/', '../../utils/', './lib/', './']
+search_paths = ['../../fonts/','../../drivers/', '../../drivers/avr/', '../../utils/', './lib/', './']
 BUILD_COMMAND = "$(CC) -c $(CFLAGS) $< -o $@"
 
 find_include = re.compile('#include "(.+)"')

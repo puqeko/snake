@@ -30,7 +30,7 @@ int main (void)
         .snakeLength = 0, // Boris starts at this length
         .snakeHead = {},  // Position 0, 0
         .snakeTail = {},  // Position 0, 0
-        .gameModeString = "SNAKE - Push when ready"
+        .gameModeString = "SNAKE - Push to start"
     };
 
     snake_init(&state);

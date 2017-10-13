@@ -9,6 +9,7 @@
 #include "pio.h"
 #include "ledmat.h"
 #include "tinygl.h"
+#include "font5x7_1.h"
 
 
 // Define PIO pins driving LED matrix rows.
@@ -39,6 +40,7 @@ void change_state_to_end(State* state)
     char* endString = "Game over!";
     state->gameMode = GAMEMODE_END;
     state->gameModeString = endString;
+    tinygl_text(state->gameModeString);
 }
 
 void reset_state_to_title(State* state)
@@ -57,9 +59,11 @@ void board_init(void)
 {
     ledmat_init();
     tinygl_init(TINYGL_UPDATE_RATE);
-    //tinygl_font_set(&font5x7_1);
+    tinygl_font_set(&font5x7_1); 
     tinygl_text_speed_set(TINYGL_TEXT_SPEED);
     tinygl_text_mode_set(TINYGL_TEXT_MODE_SCROLL);
+    char* titleString = "SNAKE";
+    tinygl_text(titleString); // setting the title screen text
 }
 
 void board_column(const uint8_t patternArray[GAMEBOARD_ROWS_NUM][GAMEBOARD_COLS_NUM], uint8_t currentColumn)
@@ -95,15 +99,13 @@ void board_column(const uint8_t patternArray[GAMEBOARD_ROWS_NUM][GAMEBOARD_COLS_
 
 void board_update(State* state)
 // Show the snake on the LED matrix.
-{
+{   
     if (state->gameMode == GAMEMODE_TITLE) {
-        // char* titleString = "SNAKE - Push when ready";
-        // tinygl_text(titleString);
-        // tinygl_update();
+        // Update the scrolling title string
+        tinygl_update();
     }
     if (state->gameMode == GAMEMODE_END) {
-        // char* endString = "Game over!";
-        // tinygl_text(endString);
+        // Update the scrolling end game string
         tinygl_update();
     }
     if (state->gameMode == GAMEMODE_SNAKE) {

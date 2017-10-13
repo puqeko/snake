@@ -83,7 +83,7 @@ static void run_boris_run(State* state)
 void snake_init(State* state)
 {
 
-    //state->isInControl = true;
+    // state->isInControl = true;
     state->gameMode = GAMEMODE_TITLE;
 
     // state->isReady = false;
