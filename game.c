@@ -9,6 +9,7 @@
 #include "snake.h"
 #include "board.h"
 #include "task.h"
+#include "actionbeep.h"
 
 #define SNAKE_UPDATE_RATE (TASK_RATE / 2)
 #define INPUT_UPDATE_RATE (TASK_RATE / 30)
@@ -23,6 +24,7 @@
 int main (void)
 {
     system_init ();
+    beeper_init();
     board_init();
     input_init();
     input_set_controller(snake_update);
@@ -40,7 +42,7 @@ int main (void)
         .beginSnake = change_state_to_snake
     };
 
-    snake_init(&state);
+    // snake_init(&state);
     state.beginTitle(&state);
 
     // Array of tasks for task scheduler to run. The tasks share,
@@ -61,6 +63,6 @@ int main (void)
         }
     };
 
-    // Begin
+    // Begin the fun!
     task_schedule (tasks, ARRAY_SIZE(tasks));
 }

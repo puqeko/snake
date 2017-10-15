@@ -13,6 +13,7 @@
 #include "delay.h"
 #include "led.h"
 #include "code.h"
+#include "actionbeep.h"
 #include <stdlib.h>
 #include <avr/io.h>
 
@@ -206,7 +207,7 @@ void input_check_for_sync(State* state)
         // state->gameMode = GAMEMODE_SNAKE;
         // init_as_controller_snake(state);
         
-        state->isReady = true;  // This board is ready.
+        state->isReady = true; // This board is ready.
 
         if (state->isOtherBoardReady) {
             // Wait 1 ms for transmission. See ir_uart.c
@@ -242,7 +243,9 @@ void input_check_for_sync(State* state)
             state->isOtherBoardReady = state->isReady = false;
             init_as_controller_snake(state);
         }
+        run_action_beep(TONE_PUSH_EVENT); // single beep
     }
+    
 }
 
 
@@ -266,6 +269,7 @@ void input_update(State* state)
     } else if (state->gameMode == GAMEMODE_END) {
         if (navswitch_push_event_p(NAVSWITCH_PUSH)) {
             state->beginTitle(state);
+            run_action_beep(TONE_PUSH_EVENT); // single beep
         }
     }
 }

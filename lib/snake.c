@@ -9,6 +9,7 @@
 
 #include "snake.h"
 #include "code.h"
+#include "actionbeep.h"
 
 static Position get_next_position(State* state, Position currHeadPos) 
 // Takes the head position of the snake and determines its next position depending on whether it's an
@@ -73,6 +74,7 @@ static void run_boris_run(State* state)
     if (will_eat_food(state, head)) {
         state->snakeLength++;
         code_send(CODED_EAT);
+        run_action_beep(TONE_FOOD_EAT);
     }
     
     // Grow at the start of the game.
@@ -95,33 +97,34 @@ static void run_boris_run(State* state)
 }
 
 
-void snake_init(State* state)
-{
-    // state->isInControl = true;
-    // state->gameMode = GAMEMODE_TITLE;
+// void snake_init(State* state)
+// // An apparently completely pointless, space wasting, totally commented function.
+// {
+//     // state->isInControl = true;
+//     // state->gameMode = GAMEMODE_TITLE;
     
 
-    // state->isReady = false;
-    // state->isOtherBoardReady = false;
+//     // state->isReady = false;
+//     // state->isOtherBoardReady = false;
 
-    //     state->gameMode = GAMEMODE_TITLE;
+//     //     state->gameMode = GAMEMODE_TITLE;
 
-    //     // Initalise snake from 2, 0 to 2, 2
-    //     state->gameBoard[6][7] = SNAKE_CELL_DOWN;
-    //     state->gameBoard[5][7] = SNAKE_CELL_DOWN;
-    //     state->gameBoard[4][7] = SNAKE_CELL_DOWN;
-    //     state->gameBoard[3][7] = SNAKE_CELL_DOWN;
-    //     state->gameBoard[2][7] = SNAKE_CELL_DOWN;
+//     //     // Initalise snake from 2, 0 to 2, 2
+//     //     state->gameBoard[6][7] = SNAKE_CELL_DOWN;
+//     //     state->gameBoard[5][7] = SNAKE_CELL_DOWN;
+//     //     state->gameBoard[4][7] = SNAKE_CELL_DOWN;
+//     //     state->gameBoard[3][7] = SNAKE_CELL_DOWN;
+//     //     state->gameBoard[2][7] = SNAKE_CELL_DOWN;
     
-    //     Position head = {2, 7};
-    //     Position tail = {6, 7};
-    //     state->snakeHead = head;
-    //     state->snakeTail = tail;
+//     //     Position head = {2, 7};
+//     //     Position tail = {6, 7};
+//     //     state->snakeHead = head;
+//     //     state->snakeTail = tail;
     
-    //     state->snakeLength = 5;
+//     //     state->snakeLength = 5;
     
-    //     state->isInControl = false;
-}
+//     //     state->isInControl = false;
+// }
 
 
 void snake_update(State* state)
@@ -132,7 +135,7 @@ void snake_update(State* state)
     if (state->gameMode == GAMEMODE_SNAKE) {
         // Update snake position.
         run_boris_run(state);
-        //state->gameBoard[3][2] = !state->gameBoard[3][2];
+        //state->gameBoard[3][2] = !state->gameBoard[3][2]; <-- ???????????
     }
     // else do nothing
 }
