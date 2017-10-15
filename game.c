@@ -17,7 +17,6 @@
 
 // TODO:
 // Cannot go back on itself (i.e. opp direction)
-// Communicate that gamemode changed to 
 
 
 int main (void)

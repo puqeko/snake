@@ -10,7 +10,7 @@
 #include "snake.h"
 #include "code.h"
 
-static Position get_next_position(State* state, Position currHeadPos) 
+static Position get_next_position(State* state, Position currHeadPos)
 // Takes the head position of the snake and determines its next position depending on whether it's an
 // up, down, left or right enum. Returns a position struct
 {
@@ -33,7 +33,7 @@ static Position get_next_position(State* state, Position currHeadPos)
 }
 
 
-static bool will_self_intersect(State* state, Position nextHeadPos) 
+static bool will_self_intersect(State* state, Position nextHeadPos)
 // Returns true if the next head position is already occupied by an enum other than SNAKE_CELL_EMPTY
 {
     if (state->gameBoard[nextHeadPos.row][nextHeadPos.col] != SNAKE_CELL_EMPTY &&
@@ -52,7 +52,7 @@ static bool will_eat_food(State* state, Position nextHeadPos)
 // Return true if when the snakes head moves in direction then it
 // will consume food. Boris will be happy (and slowly becomes obese).
 {
-    // If moving snake head in current direction will create intersect with 
+    // If moving snake head in current direction will create intersect with
     // then return true.
     return state->gameBoard[nextHeadPos.row][nextHeadPos.col] == SNAKE_CELL_FOOD;
 }
@@ -74,13 +74,13 @@ static void run_boris_run(State* state)
         state->snakeLength++;
         code_send(CODED_EAT);
     }
-    
+
     // Grow at the start of the game.
     if (state->snakeLength == state->snakeTrueLength) {
         // Move tail pointer.
         Position oldTail = state->snakeTail;
         Position tail = get_next_position(state, oldTail);
-        
+
         // Remove previous cell.
         state->gameBoard[oldTail.row][oldTail.col] = SNAKE_CELL_EMPTY;
         state->snakeTail = tail;  // Update to new position.
@@ -99,7 +99,7 @@ void snake_init(State* state)
 {
     // state->isInControl = true;
     // state->gameMode = GAMEMODE_TITLE;
-    
+
 
     // state->isReady = false;
     // state->isOtherBoardReady = false;
@@ -112,14 +112,14 @@ void snake_init(State* state)
     //     state->gameBoard[4][7] = SNAKE_CELL_DOWN;
     //     state->gameBoard[3][7] = SNAKE_CELL_DOWN;
     //     state->gameBoard[2][7] = SNAKE_CELL_DOWN;
-    
+
     //     Position head = {2, 7};
     //     Position tail = {6, 7};
     //     state->snakeHead = head;
     //     state->snakeTail = tail;
-    
+
     //     state->snakeLength = 5;
-    
+
     //     state->isInControl = false;
 }
 

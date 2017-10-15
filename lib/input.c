@@ -45,29 +45,57 @@ void read_navswitch_inputs(State* state)
 }
 
 
+static void spawn_food(State* state)
+// Randomly place food at an unoccupied cell.
+{
+    int row = 0;
+    int col = 0;
+
+    do {
+        row = rand() % 7;
+        col = rand() % 5;
+        // Keep trying until a legal position is found.
+    } while (state->gameBoard[row][col] != SNAKE_CELL_EMPTY);
+
+    state->gameBoard[row][col] = SNAKE_CELL_FOOD;
+    state->food.col = col;
+    state->food.row = row;
+}
+
+
+static void set_head_direction(State* state, SnakeCell direction)
+// Set the snake head to point in a particular direction.
+{
+    int row = state->snakeHead.row;
+    int col = state->snakeHead.col;
+
+    state->gameBoard[row][col] = direction;
+}
+
+
 static void receive_external_input(State* state)
-// TODO: Keep boards in sync.
+// Handle incomming messages when this board is the slave. Set the direction of
+// the snake head, update from an external tick, set a new food position, and
+// receive control from the other snake.
 {
     if (code_has_message()) {
         Code message = code_get();
-        int row = state->snakeHead.row;
-        int col = state->snakeHead.col;
-        
+
         // Note: Directions have been reversed because the snake
         // model is mirrorred on the other board relative to this one.
         // Hence, a movement up is actually down, etc.
         switch(message) {
             case CODED_UP:
-                state->gameBoard[row][col] = SNAKE_CELL_DOWN;
+                set_head_direction(state, SNAKE_CELL_DOWN);
                 break;
             case CODED_DOWN:
-                state->gameBoard[row][col] = SNAKE_CELL_UP;
+                set_head_direction(state, SNAKE_CELL_UP);
                 break;
             case CODED_LEFT:
-                state->gameBoard[row][col] = SNAKE_CELL_RIGHT;
+                set_head_direction(state, SNAKE_CELL_RIGHT);
                 break;
             case CODED_RIGHT:
-                state->gameBoard[row][col] = SNAKE_CELL_LEFT;
+                set_head_direction(state, SNAKE_CELL_LEFT);
                 break;
             case CODED_TICK:
                 controllerUpdateFunc(state);
@@ -78,17 +106,7 @@ static void receive_external_input(State* state)
                 break;
             case CODED_EAT:
                 state->snakeLength++;
-                while (true) {
-                    int row = rand() % 7;
-                    int col = rand() % 5;
-        
-                    if (state->gameBoard[row][col] == SNAKE_CELL_EMPTY) {
-                        state->gameBoard[row][col] = SNAKE_CELL_FOOD;
-                        state->food.col = col;
-                        state->food.row = row;
-                        break;
-                    }
-                }
+                spawn_food(state);
                 break;
             default:
                 // Ignore bad input as noise.
@@ -116,7 +134,9 @@ void input_update_control_status(State* state)
 
 // 2 Hz
 void input_update_control(State* state)
-{   
+// Check if we should remain in control, make sure to send instructions to the
+// other board if so.
+{
     if (state->gameMode == GAMEMODE_SNAKE && state->isInControl) {
         // Clock from this board as we are in control.
         controllerUpdateFunc(state);
@@ -128,7 +148,7 @@ void input_update_control(State* state)
 
 
 void input_init(void)
-// TODO: Configure navswitch etc. 
+// Configure navswtich, led, and code modules.
 {
     navswitch_init();
     code_init();
@@ -137,22 +157,20 @@ void input_init(void)
 }
 
 
-void input_set_controller(input_controller_update_func_t func) {
+void input_set_controller(input_controller_update_func_t func)
+// Set the function to call when we are read to updat the snake.
+{
     controllerUpdateFunc = func;
 }
 
 
 void init_as_controller_snake(State* state)
+// Initalise boris at one cell. He will grow from a length of 1 up to a length
+// of 5 after the game has started.
 {
     state->isInControl = true;
-    //previousControlState = true;
 
-    // Initalise snake from 2, 0 to 2, 2
     state->gameBoard[0][2] = SNAKE_CELL_DOWN;
-    // state->gameBoard[1][2] = SNAKE_CELL_UP;
-    // state->gameBoard[2][2] = SNAKE_CELL_UP;
-    // state->gameBoard[3][2] = SNAKE_CELL_UP;
-    // state->gameBoard[4][2] = SNAKE_CELL_UP;
 
     Position head = {0, 2};
     Position tail = {0, 2};
@@ -165,15 +183,13 @@ void init_as_controller_snake(State* state)
 }
 
 void init_as_slave_snake(State* state)
+// Initalise a mirrored version of boris so that it maintains an off board
+// model of boris on the other board.
 {
     state->isInControl = false;
 
     // Initalise snake mirrored
     state->gameBoard[6][7] = SNAKE_CELL_UP;
-    // state->gameBoard[5][7] = SNAKE_CELL_DOWN;
-    // state->gameBoard[4][7] = SNAKE_CELL_DOWN;
-    // state->gameBoard[3][7] = SNAKE_CELL_DOWN;
-    // state->gameBoard[2][7] = SNAKE_CELL_DOWN;
 
     Position tail = {6, 7};
     Position head = {6, 7};
@@ -184,39 +200,23 @@ void init_as_slave_snake(State* state)
     state->snakeTrueLength = 1;  // Make it grow to 5.
     state->snakeStartLength = 5;
 
-    srand(TCNT1);  // initalise from timer value.
-    while (true) {
-        int row = rand() % 7;
-        int col = rand() % 5;
-
-        if (state->gameBoard[row][col] == SNAKE_CELL_EMPTY) {
-            state->gameBoard[row][col] = SNAKE_CELL_FOOD;
-            state->food.col = col;
-            state->food.row = row;
-            break;
-        }
-    }
+    srand(TCNT1);  // Seed psudorandom generator from timer value.
+    spawn_food(state);
 }
 
 
 void input_check_for_sync(State* state)
+// In begin mode, sync the boards by having them both signify they are read
+// by pressing the middle navswitch button.
 {
     if (navswitch_push_event_p(NAVSWITCH_PUSH)) {
 
-        // state->gameMode = GAMEMODE_SNAKE;
-        // init_as_controller_snake(state);
-        
         state->isReady = true;  // This board is ready.
 
         if (state->isOtherBoardReady) {
-            // Wait 1 ms for transmission. See ir_uart.c
-            // We need to send instantly for the wait to work.
-            //code_send_now(CODED_READY);
-            //DELAY_US (1000);
             code_send(CODED_READY);
             code_clear_messages();
 
-            //state->gameMode = GAMEMODE_SNAKE;
             state->beginSnake(state);
 
             // Reset for next time.
@@ -224,9 +224,10 @@ void input_check_for_sync(State* state)
             init_as_slave_snake(state);
             led_set (LED1, false);
         } else {
-            //code_send_now(CODED_READY);
             code_send(CODED_READY);
-            led_set (LED1, true);  // Signal that we are waiting for the other board.
+
+            // Signal that we are waiting for the other board.
+            led_set (LED1, true);
         }
     }
 
@@ -250,7 +251,7 @@ void input_check_for_sync(State* state)
 
 // 50 Hz
 void input_update(State* state)
-// TODO: Poll for navswitch and button inputs.
+// Poll for navswitch and button inputs.
 {
     navswitch_update();
     code_update();  // Sync with other board.

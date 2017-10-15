@@ -29,14 +29,14 @@ enum GAMEMODE {
 
 
 // Used to map the snake's position and the position of food.
-enum SNAKE_CELL {
+typedef enum SNAKE_CELL {
     SNAKE_CELL_EMPTY = 0,
     SNAKE_CELL_UP,
     SNAKE_CELL_DOWN,
     SNAKE_CELL_LEFT,
     SNAKE_CELL_RIGHT,
     SNAKE_CELL_FOOD
-};
+} SnakeCell;
 
 
 // x,y coordinate system
@@ -54,7 +54,7 @@ struct state_s {
     bool isOtherBoardReady;
     bool isReady;
     // 7 rows, 10 columns to be consistent with LED matrices.
-    uint8_t gameBoard[GAMEBOARD_ROWS_NUM][GAMEBOARD_COLS_NUM]; 
+    uint8_t gameBoard[GAMEBOARD_ROWS_NUM][GAMEBOARD_COLS_NUM];
     uint8_t snakeLength;
     uint8_t snakeTrueLength;
     uint8_t snakeStartLength;
