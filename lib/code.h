@@ -2,8 +2,9 @@
 // Two player snake game played with two UCFK's
 // Ir codings
 //
-// By Jozef and Thomas
-// Editied 11-10-17
+// By: Jozef Crosland jrc149
+// Thomas Morrison tjm195
+// Edited 11-10-17
 
 #include "system.h"
 

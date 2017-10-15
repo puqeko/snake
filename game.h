@@ -1,8 +1,9 @@
 // game.h
 // Two player snake game played with two UCFK's
 //
-// By Jozef and Thomas
-// Editied 02-10-17
+// By: Jozef Crosland jrc149
+// Thomas Morrison tjm195
+// Edited 02-10-17
 
 #include "system.h"
 #include "task.h"
@@ -59,7 +60,6 @@ struct state_s {
     uint8_t snakeTrueLength;
     uint8_t snakeStartLength;
     bool shouldBeep;
-    uint8_t beepCount;
     Position snakeHead;
     Position snakeTail;
     Position food;

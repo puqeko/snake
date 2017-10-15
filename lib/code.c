@@ -2,12 +2,13 @@
 // Two player snake game played with two UCFK's
 // Ir codings
 //
-// By Jozef and Thomas
-// Editied 11-10-17
+// By: Jozef Crosland jrc149
+// Thomas Morrison tjm195
+// Edited 11-10-17
 //
 // Instructions:
 //
-// Messages are transimmited between Fun kits using codes.
+// Messages are transmitted between Fun kits using codes.
 // Call code_init() before using other functions.
 // Check if there are messages to read with code_has_message() and then
 // use code_get() to receive the message as a Code.

@@ -2,8 +2,9 @@
 // Two player snake game played with two UCFK's
 // Button controls
 //
-// By Jozef and Thomas
-// Editied 02-10-17
+// By: Jozef Crosland jrc149
+// Thomas Morrison tjm195
+// Edited 02-10-17
 
 // TODO: Transfer ownership properly.
 // If given control but not in control then catchup.
@@ -243,8 +244,7 @@ void input_check_for_sync(State* state)
             state->isOtherBoardReady = state->isReady = false;
             init_as_controller_snake(state);
         }
-        state->beepCount = 1;
-        //run_action_beep(TONE_PUSH_EVENT); // single beep
+        run_action_beep(TONE_PUSH_EVENT); // single beep
     }
 }
 
@@ -269,8 +269,7 @@ void input_update(State* state)
     } else if (state->gameMode == GAMEMODE_END) {
         if (navswitch_push_event_p(NAVSWITCH_PUSH)) {
             state->beginTitle(state);
-            //run_action_beep(TONE_PUSH_EVENT); // single beep
-            state->beepCount = 1;
+            run_action_beep(TONE_PUSH_EVENT); // single beep
         }
     }
 }

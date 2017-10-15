@@ -2,8 +2,9 @@
 // Two player snake game played with two UCFK's
 // Button controls
 //
-// By Jozef and Thomas
-// Editied 02-10-17
+// By: Jozef Crosland jrc149
+// Thomas Morrison tjm195
+// Edited 02-10-17
 
 #include "game.h"
 

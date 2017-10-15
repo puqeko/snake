@@ -1,9 +1,10 @@
-// display.c
+// board.c
 // Two player snake game played with two UCFK's
 // Display the board to the led matrix.
 //
-// By Jozef and Thomas
-// Editied 01-10-17
+// By: Jozef Crosland jrc149
+// Thomas Morrison tjm195
+// Edited 01-10-17
 
 #include "board.h"
 #include "pio.h"
@@ -36,7 +37,7 @@ void change_state_to_snake(State* state)
 }
 
 void change_state_to_end(State* state)
-// Changes gamemode to end and changes the string to "Game over!"
+// Changes gamemode to end and changes the string to "Game over!". Also resets strings and LED settings
 {
     state->gameMode = GAMEMODE_END;
     tinygl_clear();
@@ -48,7 +49,7 @@ void change_state_to_end(State* state)
 }
 
 void reset_state_to_title(State* state)
-// Reset to the back to the title screen
+// Reset to the back to the title screen. Also reset the game mode string and LED settings
 {
     state->gameMode = GAMEMODE_TITLE;
 
