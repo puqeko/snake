@@ -17,7 +17,7 @@
 // LEDMAT_ROWS_NUM times at the desired frame rate of 100 Hz.
 #define TINYGL_TEXT_SPEED 15 // number of letters per 10 seconds
 #define DISP_ROWS_UPDATE_FREQ (500 * GAMEBOARD_ROWS_NUM)
-#define TINYGL_UPDATE_RATE (DISP_ROWS_UPDATE_FREQ) 
+#define TINYGL_UPDATE_RATE (DISP_ROWS_UPDATE_FREQ)
 
 
 // Game modes. Can add more later if necessary
@@ -54,10 +54,12 @@ struct state_s {
     bool isOtherBoardReady;
     bool isReady;
     // 7 rows, 10 columns to be consistent with LED matrices.
-    uint8_t gameBoard[GAMEBOARD_ROWS_NUM][GAMEBOARD_COLS_NUM]; 
+    uint8_t gameBoard[GAMEBOARD_ROWS_NUM][GAMEBOARD_COLS_NUM];
     uint8_t snakeLength;
     uint8_t snakeTrueLength;
     uint8_t snakeStartLength;
+    bool shouldBeep;
+    uint8_t beepCount;
     Position snakeHead;
     Position snakeTail;
     Position food;

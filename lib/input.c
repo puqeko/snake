@@ -53,7 +53,7 @@ static void receive_external_input(State* state)
         Code message = code_get();
         int row = state->snakeHead.row;
         int col = state->snakeHead.col;
-        
+
         // Note: Directions have been reversed because the snake
         // model is mirrorred on the other board relative to this one.
         // Hence, a movement up is actually down, etc.
@@ -82,7 +82,7 @@ static void receive_external_input(State* state)
                 while (true) {
                     int row = rand() % 7;
                     int col = rand() % 5;
-        
+
                     if (state->gameBoard[row][col] == SNAKE_CELL_EMPTY) {
                         state->gameBoard[row][col] = SNAKE_CELL_FOOD;
                         state->food.col = col;
@@ -117,7 +117,7 @@ void input_update_control_status(State* state)
 
 // 2 Hz
 void input_update_control(State* state)
-{   
+{
     if (state->gameMode == GAMEMODE_SNAKE && state->isInControl) {
         // Clock from this board as we are in control.
         controllerUpdateFunc(state);
@@ -129,7 +129,7 @@ void input_update_control(State* state)
 
 
 void input_init(void)
-// TODO: Configure navswitch etc. 
+// TODO: Configure navswitch etc.
 {
     navswitch_init();
     code_init();
@@ -206,7 +206,7 @@ void input_check_for_sync(State* state)
 
         // state->gameMode = GAMEMODE_SNAKE;
         // init_as_controller_snake(state);
-        
+
         state->isReady = true; // This board is ready.
 
         if (state->isOtherBoardReady) {
@@ -243,9 +243,9 @@ void input_check_for_sync(State* state)
             state->isOtherBoardReady = state->isReady = false;
             init_as_controller_snake(state);
         }
-        run_action_beep(TONE_PUSH_EVENT); // single beep
+        state->beepCount = 1;
+        //run_action_beep(TONE_PUSH_EVENT); // single beep
     }
-    
 }
 
 
@@ -269,7 +269,8 @@ void input_update(State* state)
     } else if (state->gameMode == GAMEMODE_END) {
         if (navswitch_push_event_p(NAVSWITCH_PUSH)) {
             state->beginTitle(state);
-            run_action_beep(TONE_PUSH_EVENT); // single beep
+            //run_action_beep(TONE_PUSH_EVENT); // single beep
+            state->beepCount = 1;
         }
     }
 }

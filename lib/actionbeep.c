@@ -1,5 +1,5 @@
 // actionbeep.c
-// Action beep module for initialising and playing a series of configurable beeps 
+// Action beep module for initialising and playing a series of configurable beeps
 //
 // Written by Jozef and Thomas
 // Created 15/10/2017
@@ -8,7 +8,7 @@
 #include "pio.h"
 #include "pacer.h"
 
-void beeper_init(void) 
+void beeper_init(void)
 // Initialise pacer and PIO pins to which the piezo speaker is connected
 {
     pacer_init(LOOP_RATE);
@@ -16,21 +16,21 @@ void beeper_init(void)
     pio_config_set(PIEZO2_PIO, PIO_OUTPUT_HIGH);
 }
 
-void run_beep_cycle(uint8_t maxNumberCycles) 
+void run_beep_cycle(uint16_t maxNumberCycles)
 // Runs the beep for the configured sound frequency, number of cycles and the on/off frequency.
 // The configurations are defined in actionbeep.h
 {
     bool playingMode = true;
-    uint8_t count = 0;
-    uint8_t currCycleCount = 0;
-    // Currently an annoyance where I can't use the macro CYCLE_COUNTS in if statements as I'd like
-    uint8_t maxCycleCount = 44; // Using a manually defined variable in place of CYCLE_COUNTS atm
-    
+    uint16_t count = 0;
+    uint16_t currCycleCount = 0;
+    // // Currently an annoyance where I can't use the macro CYCLE_COUNT in if statements as I'd like
+    // uint8_t maxCycleCount = 44; // Using a manually defined variable in place of CYCLE_COUNT atm
+
     while (currCycleCount < maxNumberCycles)
     {
         if (playingMode) {
-            /*  should be CYCLE_COUNTS below */
-            while(count < maxCycleCount) {
+            /*  should be CYCLE_COUNT below */
+            while(count < CYCLE_COUNT) {
                 pacer_wait();
                 count++;
                 pio_output_toggle(PIEZO1_PIO);
@@ -38,8 +38,8 @@ void run_beep_cycle(uint8_t maxNumberCycles)
             }
             playingMode = false;
             count = 0;
-        } else { /* should be CYCLE_COUNTS below */
-            while (count < maxCycleCount) {
+        } else { /* should be CYCLE_COUNT below */
+            while (count < CYCLE_COUNT) {
                 pacer_wait();
                 count++;
             }
@@ -57,7 +57,7 @@ void run_end_tone(void)
 
 }
 
-void run_action_beep(toneMode inputSetting) 
+void run_action_beep(toneMode inputSetting)
 // Calls run_beep_cycle with the required number of beep cycles depending on the enum toneMode argument
 {
     switch(inputSetting) {

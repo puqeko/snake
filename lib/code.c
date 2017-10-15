@@ -42,8 +42,16 @@ typedef struct queue_s {
 
 
 // Message queues (incomming and outgoing)
-Queue messages_in = {0};
-Queue messages_out = {0};
+Queue messages_in = {
+    {0},
+    0,
+    0
+};
+Queue messages_out = {
+    {0},
+    0,
+    0
+};
 
 
 static void queue_push(Queue* queue, Code code)
@@ -72,7 +80,8 @@ static Code decode_ir(void)
 
     unsigned char ch = (unsigned char)ir_uart_getc();
 
-    for (int i = 0; i < numCodedOps; i++) {
+    int i;
+    for (i = 0; i < numCodedOps; i++) {
         if (ch == codedOperations[i]) {
             return codedOperations[i];
         }

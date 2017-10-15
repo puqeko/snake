@@ -18,8 +18,41 @@
 
 // TODO:
 // Cannot go back on itself (i.e. opp direction)
-// Communicate that gamemode changed to 
+// Communicate that gamemode changed to
 
+
+void sound_update(State* state)
+// Update at 880 Hz
+{
+    static int count = 0;
+    static bool shouldWait = false;
+
+    if (shouldWait) {
+        count++;
+
+        // Do nothing...
+
+        if (count >= CYCLE_COUNT) {
+            count = 0;
+            shouldWait = false;
+        }
+    } else if (state->beepCount > 0) {
+        count++;
+
+        // Vibrating speaker.
+        pio_output_toggle(PIEZO1_PIO);
+        pio_output_toggle(PIEZO2_PIO);
+
+        if (count >= CYCLE_COUNT) {
+            count = 0;
+
+            state->beepCount--;
+            if (state->beepCount > 0) {
+                shouldWait = true;
+            }
+        }
+    }
+}
 
 int main (void)
 {
@@ -35,11 +68,12 @@ int main (void)
         .gameMode = GAMEMODE_TITLE,
         .gameBoard = {},  // 7 x 10 array initalised to zero
         .snakeLength = 0, // Boris starts at this length
-        .snakeHead = {},  // Position 0, 0
-        .snakeTail = {},  // Position 0, 0
+        .snakeHead = {0, 0},  // Position 0, 0
+        .snakeTail = {0, 0},  // Position 0, 0
         .beginEnd = change_state_to_end,
         .beginTitle = reset_state_to_title,
-        .beginSnake = change_state_to_snake
+        .beginSnake = change_state_to_snake,
+        .beepCount = 1
     };
 
     // snake_init(&state);
@@ -60,9 +94,15 @@ int main (void)
             .func = (task_func_t)board_update,
             .period = DISPLAY_UPDATE_RATE,
             .data = &state
+        }, {
+            .func = (task_func_t)sound_update,
+            .period = TASK_RATE / LOOP_RATE,
+            .data = &state
         }
     };
 
     // Begin the fun!
     task_schedule (tasks, ARRAY_SIZE(tasks));
+
+    return 0;
 }
