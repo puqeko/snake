@@ -211,8 +211,9 @@ void input_check_for_sync(State* state)
         if (state->isOtherBoardReady) {
             // Wait 1 ms for transmission. See ir_uart.c
             // We need to send instantly for the wait to work.
-            code_send_now(CODED_READY);
-            DELAY_US (1000);
+            //code_send_now(CODED_READY);
+            //DELAY_US (1000);
+            code_send(CODED_READY);
             code_clear_messages();
 
             //state->gameMode = GAMEMODE_SNAKE;
@@ -221,10 +222,11 @@ void input_check_for_sync(State* state)
             // Reset for next time.
             state->isOtherBoardReady = state->isReady = false;
             init_as_slave_snake(state);
-            led_set (LED1, 0);
+            led_set (LED1, false);
         } else {
-            code_send_now(CODED_READY);
-            led_set (LED1, 1);  // Signal that we are waiting for the other board.
+            //code_send_now(CODED_READY);
+            code_send(CODED_READY);
+            led_set (LED1, true);  // Signal that we are waiting for the other board.
         }
     }
 
