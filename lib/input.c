@@ -6,9 +6,7 @@
 // Thomas Morrison tjm195
 // Edited 02-10-17
 
-// TODO: Transfer ownership properly.
-// If given control but not in control then catchup.
-
+#include <stdlib.h>
 #include "input.h"
 #include "navswitch.h"
 #include "delay.h"
@@ -16,8 +14,7 @@
 #include "code.h"
 #include "actionbeep.h"
 #include "tinygl.h"
-#include <stdlib.h>
-#include <avr/io.h>
+
 
 static input_controller_update_func_t controllerUpdateFunc;
 
