@@ -30,14 +30,14 @@ enum GAMEMODE {
 
 
 // Used to map the snake's position and the position of food.
-enum SNAKE_CELL {
+typedef enum SNAKE_CELL {
     SNAKE_CELL_EMPTY = 0,
     SNAKE_CELL_UP,
     SNAKE_CELL_DOWN,
     SNAKE_CELL_LEFT,
     SNAKE_CELL_RIGHT,
     SNAKE_CELL_FOOD
-};
+} SnakeCell;
 
 
 // x,y coordinate system

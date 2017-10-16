@@ -67,7 +67,6 @@ static void run_boris_run(State* state)
     Position head = get_next_position(state, oldHead);
 
     if (will_self_intersect(state, head)) {
-        //state->gameMode = GAMEMODE_END;
         state->beginEnd(state);
         return;  // We are done here.
     }
@@ -75,7 +74,6 @@ static void run_boris_run(State* state)
     if (will_eat_food(state, head)) {
         state->snakeLength++;
         code_send(CODED_EAT);
-        //state->beepCount = 3;
         sound_beep(TONE_FOOD_EAT);
     }
 
@@ -93,7 +91,6 @@ static void run_boris_run(State* state)
     }
 
     // Update head position.
-    // TODO: SEND NEW POSITION (UART)
     state->gameBoard[head.row][head.col] = state->gameBoard[oldHead.row][oldHead.col];
     state->snakeHead = head;
 }

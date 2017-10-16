@@ -68,6 +68,7 @@ int main (void)
     };
 
     // Begin the fun!
+    sound_beep(TONE_PUSH_EVENT);  // One beep to signify board starting.
     task_schedule (tasks, ARRAY_SIZE(tasks));
 
     return 0;

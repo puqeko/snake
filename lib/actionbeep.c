@@ -13,11 +13,11 @@
 #define PIEZO2_PIO PIO_DEFINE (PORT_D, 5) // DON'T USE 6! Causes the game to fail to transition title>snake
 
 #define CYCLE_PERIOD 100 // desired cycle period in milliseconds
-#define CYCLE_COUNT (uint16_t)((CYCLE_PERIOD / 1000.0) * SOUND_UPDATE_RATE) // number of times pacer_wait() is called
+#define CYCLE_COUNT (uint16_t)((CYCLE_PERIOD / 1000.0) * (2 * TONE_FREQUENCY)) // number of times pacer_wait() is called
 #define FOOD_NUM_BEEPS 3
 #define PUSH_NUM_BEEPS 1
 
-static uint16_t numBeepsInput = 0;
+static uint16_t numBeepsInput = 1;
 
 void sound_init(void)
 // Initialise PIO pins to which the piezo speaker is connected

@@ -22,30 +22,45 @@
 static input_controller_update_func_t controllerUpdateFunc;
 
 
+static void set_snake_direction(State* state, SnakeCell newDirection)
+{
+    int8_t row = state->snakeHead.row;
+    int8_t col = state->snakeHead.col;
+
+    SnakeCell currentDirection = state->gameBoard[row][col];
+
+    if ((newDirection == SNAKE_CELL_LEFT && currentDirection == SNAKE_CELL_RIGHT) ||
+        (newDirection == SNAKE_CELL_RIGHT && currentDirection == SNAKE_CELL_LEFT) ||
+        (newDirection == SNAKE_CELL_DOWN && currentDirection == SNAKE_CELL_UP) ||
+        (newDirection == SNAKE_CELL_UP && currentDirection == SNAKE_CELL_DOWN)) {
+
+        // Ignore boris running back into himself.
+        return;
+    }
+
+    state->gameBoard[row][col] = newDirection;
+}
 
 
 void read_navswitch_inputs(State* state)
 // Poll the navswitch and update the direction of the head of the snake accordingly.
 // Send instructions to other board as well.
 {
-    int8_t row = state->snakeHead.row;
-    int8_t col = state->snakeHead.col;
-
     if (navswitch_push_event_p(NAVSWITCH_NORTH)) {
         // north navswitch has been pressed so head updated to up
-        state->gameBoard[row][col] = SNAKE_CELL_UP;
+        set_snake_direction(state, SNAKE_CELL_UP);
         code_send(CODED_UP);
     } else if (navswitch_push_event_p(NAVSWITCH_SOUTH)) {
         // south navswitch has been pressed so head updated to down
-        state->gameBoard[row][col] = SNAKE_CELL_DOWN;
+        set_snake_direction(state, SNAKE_CELL_DOWN);
         code_send(CODED_DOWN);
     } else if (navswitch_push_event_p(NAVSWITCH_WEST)) {
         // west navswitch has been pressed so head updated to left
-        state->gameBoard[row][col] = SNAKE_CELL_LEFT;
+        set_snake_direction(state, SNAKE_CELL_LEFT);
         code_send(CODED_LEFT);
     } else if (navswitch_push_event_p(NAVSWITCH_EAST)) {
         // east navswitch has been pressed so head updated to right
-        state->gameBoard[row][col] = SNAKE_CELL_RIGHT;
+        set_snake_direction(state, SNAKE_CELL_RIGHT);
         code_send(CODED_RIGHT);
     }
 }
@@ -151,14 +166,7 @@ void input_set_controller(input_controller_update_func_t func) {
 void init_as_controller_snake(State* state)
 {
     state->isInControl = true;
-    //previousControlState = true;
-
-    // Initalise snake from 2, 0 to 2, 2
     state->gameBoard[0][2] = SNAKE_CELL_DOWN;
-    // state->gameBoard[1][2] = SNAKE_CELL_UP;
-    // state->gameBoard[2][2] = SNAKE_CELL_UP;
-    // state->gameBoard[3][2] = SNAKE_CELL_UP;
-    // state->gameBoard[4][2] = SNAKE_CELL_UP;
 
     Position head = {0, 2};
     Position tail = {0, 2};
@@ -176,10 +184,6 @@ void init_as_slave_snake(State* state)
 
     // Initalise snake mirrored
     state->gameBoard[6][7] = SNAKE_CELL_UP;
-    // state->gameBoard[5][7] = SNAKE_CELL_DOWN;
-    // state->gameBoard[4][7] = SNAKE_CELL_DOWN;
-    // state->gameBoard[3][7] = SNAKE_CELL_DOWN;
-    // state->gameBoard[2][7] = SNAKE_CELL_DOWN;
 
     Position tail = {6, 7};
     Position head = {6, 7};
@@ -209,9 +213,6 @@ void input_check_for_sync(State* state)
 {
     if (navswitch_push_event_p(NAVSWITCH_PUSH)) {
 
-        // state->gameMode = GAMEMODE_SNAKE;
-        // init_as_controller_snake(state);
-
         state->isReady = true; // This board is ready.
 
         if (state->isOtherBoardReady) {
@@ -231,6 +232,7 @@ void input_check_for_sync(State* state)
         } else {
             code_send_now(CODED_READY);
             led_set (LED1, 1);  // Signal that we are waiting for the other board.
+
             tinygl_clear();
             tinygl_text(" READY");
         }
@@ -250,6 +252,7 @@ void input_check_for_sync(State* state)
             state->isOtherBoardReady = state->isReady = false;
             init_as_controller_snake(state);
         }
+
         sound_beep(TONE_PUSH_EVENT); // single beep
     }
 }
