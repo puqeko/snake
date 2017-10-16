@@ -76,7 +76,7 @@ static void run_boris_run(State* state)
         state->snakeLength++;
         code_send(CODED_EAT);
         //state->beepCount = 3;
-        run_action_beep(TONE_FOOD_EAT);
+        sound_beep(TONE_FOOD_EAT);
     }
 
     // Grow at the start of the game.

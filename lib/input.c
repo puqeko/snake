@@ -15,10 +15,14 @@
 #include "led.h"
 #include "code.h"
 #include "actionbeep.h"
+#include "tinygl.h"
 #include <stdlib.h>
 #include <avr/io.h>
 
 static input_controller_update_func_t controllerUpdateFunc;
+
+
+
 
 void read_navswitch_inputs(State* state)
 // Poll the navswitch and update the direction of the head of the snake accordingly.
@@ -227,6 +231,8 @@ void input_check_for_sync(State* state)
         } else {
             code_send_now(CODED_READY);
             led_set (LED1, 1);  // Signal that we are waiting for the other board.
+            tinygl_clear();
+            tinygl_text(" READY");
         }
     }
 
@@ -244,7 +250,7 @@ void input_check_for_sync(State* state)
             state->isOtherBoardReady = state->isReady = false;
             init_as_controller_snake(state);
         }
-        run_action_beep(TONE_PUSH_EVENT); // single beep
+        sound_beep(TONE_PUSH_EVENT); // single beep
     }
 }
 
@@ -269,7 +275,7 @@ void input_update(State* state)
     } else if (state->gameMode == GAMEMODE_END) {
         if (navswitch_push_event_p(NAVSWITCH_PUSH)) {
             state->beginTitle(state);
-            run_action_beep(TONE_PUSH_EVENT); // single beep
+            sound_beep(TONE_PUSH_EVENT); // single beep
         }
     }
 }

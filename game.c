@@ -15,16 +15,16 @@
 #define SNAKE_UPDATE_RATE (TASK_RATE / 2)
 #define INPUT_UPDATE_RATE (TASK_RATE / 30)
 #define DISPLAY_UPDATE_RATE (TASK_RATE / DISP_ROWS_UPDATE_FREQ)
+// SOUND_UPDATE_RATE defined in actionbeep.h
 
 
 // TODO:
 // Cannot go back on itself (i.e. opp direction)
-// Communicate that gamemode changed to
 
 int main (void)
 {
     system_init ();
-    beeper_init();
+    sound_init();
     board_init();
     input_init();
     input_set_controller(snake_update);
@@ -62,7 +62,7 @@ int main (void)
             .data = &state
         }, {
             .func = (task_func_t)sound_update,
-            .period = TASK_RATE / LOOP_RATE,
+            .period = SOUND_UPDATE_RATE,
             .data = &state
         }
     };

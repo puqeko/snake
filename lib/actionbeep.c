@@ -7,56 +7,27 @@
 
 #include "actionbeep.h"
 #include "pio.h"
-#include "pacer.h"
+
+//Connect piezo tweeter to pins 5 and 8 of UCFK4 P1 connector for push-pull operation.
+#define PIEZO1_PIO PIO_DEFINE (PORT_D, 1) // changed from 4 so that the piezo speaker would fit
+#define PIEZO2_PIO PIO_DEFINE (PORT_D, 5) // DON'T USE 6! Causes the game to fail to transition title>snake
+
+#define CYCLE_PERIOD 100 // desired cycle period in milliseconds
+#define CYCLE_COUNT (uint16_t)((CYCLE_PERIOD / 1000.0) * SOUND_UPDATE_RATE) // number of times pacer_wait() is called
+#define FOOD_NUM_BEEPS 3
+#define PUSH_NUM_BEEPS 1
 
 static uint16_t numBeepsInput = 0;
 
-void beeper_init(void)
+void sound_init(void)
 // Initialise PIO pins to which the piezo speaker is connected
 {
     pio_config_set(PIEZO1_PIO, PIO_OUTPUT_LOW);
     pio_config_set(PIEZO2_PIO, PIO_OUTPUT_HIGH);
 }
 
-void run_beep_cycle(uint16_t maxNumberCycles)
-// Runs the beep for the configured sound frequency, number of cycles and the on/off frequency.
-// The configurations are defined in actionbeep.h
-{
-    bool playingMode = true;
-    uint16_t count = 0;
-    uint16_t currCycleCount = 0;
 
-    while (currCycleCount < maxNumberCycles)
-    {
-        if (playingMode) {
-            /*  should be CYCLE_COUNT below */
-            while(count < CYCLE_COUNT) {
-                pacer_wait();
-                count++;
-                pio_output_toggle(PIEZO1_PIO);
-                pio_output_toggle(PIEZO2_PIO);
-            }
-            playingMode = false;
-            count = 0;
-        } else { /* should be CYCLE_COUNT below */
-            while (count < CYCLE_COUNT) {
-                pacer_wait();
-                count++;
-            }
-            playingMode = true;
-            count = 0;
-        }
-        currCycleCount++;
-    }
-
-}
-
-void run_end_tone(void)
-{
-    // do some fancy pitch / volume changes if possible or time permitting
-}
-
-void run_action_beep(ToneMode inputSetting)
+void sound_beep(ToneMode inputSetting)
 // Calls run_beep_cycle with the required number of beep cycles depending on the enum toneMode argument
 {
     switch(inputSetting) {
@@ -69,10 +40,17 @@ void run_action_beep(ToneMode inputSetting)
             numBeepsInput = FOOD_NUM_BEEPS;
             break;
         case TONE_END_SOUND:
-            run_end_tone();
+            sound_end_tone();
             break;
     }
 }
+
+
+void sound_end_tone(void)
+{
+    // do some fancy pitch / volume changes if possible or time permitting
+}
+
 
 void sound_update(__unused__ State* state)
 // Update at 880 Hz

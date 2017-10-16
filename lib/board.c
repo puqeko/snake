@@ -64,7 +64,6 @@ void reset_state_to_title(State* state)
     tinygl_clear();
     led_set (LED1, 0);
     tinygl_text(" SNAKE: PUSH START");
-    //snake_init(state); // Reinitialise the snake information
 }
 
 
@@ -82,12 +81,11 @@ void board_init(void)
 
 void board_column(uint8_t patternArray[GAMEBOARD_ROWS_NUM][GAMEBOARD_COLS_NUM], uint8_t currentColumn)
 // Draw patternArray to the LED matrix.
+// Depending on the board this function is called by, it needs
+// to take its half of the 7x10 matrix or rather, have its half of the
+// matrix passed into this function.
 {
     static int foodToggle = 0;
-    // TODO: Depending on the board this function is called by, it needs
-    // to take its half of the 7x10 matrix or rather, have its half of the
-    // matrix passed into this function.
-
     static uint8_t previousColumn = 0;
     uint8_t currentRow;
 

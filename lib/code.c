@@ -167,7 +167,7 @@ void code_update(void)
             // There is a message to read, so decode it and place in the queue.
             Code message = decode_ir();
             queue_push(&messages_in, message);
-        } else if (get_num_messages(&messages_out) != 0) {
+        } else if (get_num_messages(&messages_out) != 0 && ir_uart_write_ready_p()) {
             // There are messages to send.
             Code message = queue_pop(&messages_out);
             ir_uart_putc(message);
