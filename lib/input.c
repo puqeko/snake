@@ -27,7 +27,7 @@ static void set_snake_direction(State* state, SnakeCell newDirection)
     int8_t row = state->snakeHead.row;
     int8_t col = state->snakeHead.col;
 
-    SnakeCell currentDirection = state->gameBoard[row][col];
+    SnakeCell currentDirection = state->prevHeadValue;
 
     if ((newDirection == SNAKE_CELL_LEFT && currentDirection == SNAKE_CELL_RIGHT) ||
         (newDirection == SNAKE_CELL_RIGHT && currentDirection == SNAKE_CELL_LEFT) ||
@@ -190,6 +190,7 @@ void init_as_controller_snake(State* state)
     state->snakeLength = 5;
     state->snakeTrueLength = 1;  // Make it grow to 5.
     state->snakeStartLength = 5;
+    state->prevHeadValue = SNAKE_CELL_DOWN;
 }
 
 void init_as_slave_snake(State* state)
@@ -209,6 +210,7 @@ void init_as_slave_snake(State* state)
     state->snakeLength = 5;
     state->snakeTrueLength = 1;  // Make it grow to 5.
     state->snakeStartLength = 5;
+    state->prevHeadValue = SNAKE_CELL_UP;
 
     srand(TCNT1);  // Seed psudorandom generator from timer value.
     spawn_food(state);

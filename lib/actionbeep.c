@@ -14,7 +14,7 @@
 
 #define CYCLE_PERIOD 100 // desired cycle period in milliseconds
 #define CYCLE_COUNT (uint16_t)((CYCLE_PERIOD / 1000.0) * (2 * TONE_FREQUENCY)) // number of times pacer_wait() is called
-#define FOOD_NUM_BEEPS 3
+#define FOOD_NUM_BEEPS 2
 #define PUSH_NUM_BEEPS 1
 
 static uint16_t numBeepsInput = 1;

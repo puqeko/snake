@@ -92,6 +92,9 @@ static void run_boris_run(State* state)
 
     // Update head position.
     state->gameBoard[head.row][head.col] = state->gameBoard[oldHead.row][oldHead.col];
+
+    // Remember origonal head value between snake_update's
+    state->prevHeadValue = state->gameBoard[head.row][head.col];
     state->snakeHead = head;
 }
 

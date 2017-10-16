@@ -54,15 +54,22 @@ struct state_s {
     bool isInControl;
     bool isOtherBoardReady;
     bool isReady;
+
+    // Sound
+    bool shouldBeep;
+
     // 7 rows, 10 columns to be consistent with LED matrices.
     uint8_t gameBoard[GAMEBOARD_ROWS_NUM][GAMEBOARD_COLS_NUM];
+
+    // Snake
     uint8_t snakeLength;
     uint8_t snakeTrueLength;
     uint8_t snakeStartLength;
-    bool shouldBeep;
+    SnakeCell prevHeadValue;
     Position snakeHead;
     Position snakeTail;
     Position food;
+
     // Initialise the game mode string as title screen string
     void (* beginSnake)(State* state);
     void (* beginTitle)(State* state);
