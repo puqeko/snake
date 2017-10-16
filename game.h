@@ -1,8 +1,9 @@
 // game.h
 // Two player snake game played with two UCFK's
 //
-// By Jozef and Thomas
-// Editied 02-10-17
+// By: Jozef Crosland jrc149
+// Thomas Morrison tjm195
+// Edited 02-10-17
 
 #include "system.h"
 #include "task.h"
@@ -15,9 +16,9 @@
 
 // board_update shows only one row at a time so we require it to run
 // LEDMAT_ROWS_NUM times at the desired frame rate of 100 Hz.
-#define TINYGL_TEXT_SPEED 15
+#define TINYGL_TEXT_SPEED 15 // number of letters per 10 seconds
 #define DISP_ROWS_UPDATE_FREQ (500 * GAMEBOARD_ROWS_NUM)
-#define TINYGL_UPDATE_RATE (DISP_ROWS_UPDATE_FREQ) // this may be incorrect for tinygl, might correct
+#define TINYGL_UPDATE_RATE (DISP_ROWS_UPDATE_FREQ)
 
 
 // Game modes. Can add more later if necessary
@@ -58,6 +59,7 @@ struct state_s {
     uint8_t snakeLength;
     uint8_t snakeTrueLength;
     uint8_t snakeStartLength;
+    bool shouldBeep;
     Position snakeHead;
     Position snakeTail;
     Position food;

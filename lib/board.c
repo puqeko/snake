@@ -1,9 +1,10 @@
-// display.c
+// board.c
 // Two player snake game played with two UCFK's
 // Display the board to the led matrix.
 //
-// By Jozef and Thomas
-// Editied 01-10-17
+// By: Jozef Crosland jrc149
+// Thomas Morrison tjm195
+// Edited 01-10-17
 
 #include "board.h"
 #include "pio.h"
@@ -36,7 +37,7 @@ void change_state_to_snake(State* state)
 }
 
 void change_state_to_end(State* state)
-// Changes gamemode to end and changes the string to "Game over!"
+// Changes gamemode to end and changes the string to "Game over!". Also resets strings and LED settings
 {
     state->gameMode = GAMEMODE_END;
     tinygl_clear();
@@ -48,41 +49,43 @@ void change_state_to_end(State* state)
 }
 
 void reset_state_to_title(State* state)
-// Reset to the back to the title screen 
+// Reset to the back to the title screen. Also reset the game mode string and LED settings
 {
     state->gameMode = GAMEMODE_TITLE;
 
     // clear rows
-    for (int i = 0; i < GAMEBOARD_ROWS_NUM; i++) for (int j = 0; j < GAMEBOARD_COLS_NUM; j++) {
-        state->gameBoard[i][j] = SNAKE_CELL_EMPTY;
+    int i;
+    int j;
+    for (i = 0; i < GAMEBOARD_ROWS_NUM; i++){
+        for (j = 0; j < GAMEBOARD_COLS_NUM; j++) {
+            state->gameBoard[i][j] = SNAKE_CELL_EMPTY;
+        }
     }
     tinygl_clear();
     led_set (LED1, 0);
     tinygl_text(" SNAKE: PUSH START");
-    //snake_init(state); // Reinitialise the snake information
 }
 
 
 void board_init(void)
-// Configure LED display. Also initialises tinygl to run at the display update rate (called tinygl rate), 
+// Configure LED display. Also initialises tinygl to run at the display update rate (called tinygl rate),
 // sets the font and the message speed
 {
     ledmat_init();
     tinygl_init(TINYGL_UPDATE_RATE);
-    tinygl_font_set(&font3x5_1); 
+    tinygl_font_set(&font3x5_1);
     tinygl_text_speed_set(TINYGL_TEXT_SPEED);
     tinygl_text_dir_set(TINYGL_TEXT_DIR_ROTATE);
     tinygl_text_mode_set(TINYGL_TEXT_MODE_SCROLL);
 }
 
-void board_column(const uint8_t patternArray[GAMEBOARD_ROWS_NUM][GAMEBOARD_COLS_NUM], uint8_t currentColumn)
+void board_column(uint8_t patternArray[GAMEBOARD_ROWS_NUM][GAMEBOARD_COLS_NUM], uint8_t currentColumn)
 // Draw patternArray to the LED matrix.
+// Depending on the board this function is called by, it needs
+// to take its half of the 7x10 matrix or rather, have its half of the
+// matrix passed into this function.
 {
     static int foodToggle = 0;
-    // TODO: Depending on the board this function is called by, it needs
-    // to take its half of the 7x10 matrix or rather, have its half of the
-    // matrix passed into this function.
-
     static uint8_t previousColumn = 0;
     uint8_t currentRow;
 
@@ -114,7 +117,7 @@ void board_column(const uint8_t patternArray[GAMEBOARD_ROWS_NUM][GAMEBOARD_COLS_
 
 void board_update(State* state)
 // Show the snake on the LED matrix.
-{   
+{
     if (state->gameMode == GAMEMODE_TITLE) {
         // Update the scrolling title string
         tinygl_update();

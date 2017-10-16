@@ -2,12 +2,13 @@
 // Two player snake game played with two UCFK's
 // Ir codings
 //
-// By Jozef and Thomas
-// Editied 11-10-17
+// By: Jozef Crosland jrc149
+// Thomas Morrison tjm195
+// Edited 11-10-17
 //
 // Instructions:
 //
-// Messages are transimmited between Fun kits using codes.
+// Messages are transmitted between Fun kits using codes.
 // Call code_init() before using other functions.
 // Check if there are messages to read with code_has_message() and then
 // use code_get() to receive the message as a Code.
@@ -42,8 +43,16 @@ typedef struct queue_s {
 
 
 // Message queues (incomming and outgoing)
-Queue messages_in = {0};
-Queue messages_out = {0};
+Queue messages_in = {
+    {0},
+    0,
+    0
+};
+Queue messages_out = {
+    {0},
+    0,
+    0
+};
 
 
 static void queue_push(Queue* queue, Code code)
@@ -69,10 +78,10 @@ static Code decode_ir(void)
 // CODED_NONE if no match is found.
 {
     static int numCodedOps = ARRAY_SIZE(codedOperations);
-
     unsigned char ch = (unsigned char)ir_uart_getc();
-
-    for (int i = 0; i < numCodedOps; i++) {
+    int i;
+    
+    for (i = 0; i < numCodedOps; i++) {
         if (ch == codedOperations[i]) {
             return codedOperations[i];
         }
@@ -128,9 +137,6 @@ Code code_get(void)
 void code_pass_control(void)
 // Signal the other board to take control of the snake.
 {
-    // Wait 5 ms to sync ticks between boards on the
-    // transistion.
-    //DELAY_US(3000);
     code_send(CODED_PASS_CONTROL);
 }
 
@@ -157,7 +163,7 @@ void code_update(void)
             // There is a message to read, so decode it and place in the queue.
             Code message = decode_ir();
             queue_push(&messages_in, message);
-        } else if (get_num_messages(&messages_out) != 0) {
+        } else if (get_num_messages(&messages_out) != 0 && ir_uart_write_ready_p()) {
             // There are messages to send.
             Code message = queue_pop(&messages_out);
             ir_uart_putc(message);
