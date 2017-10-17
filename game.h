@@ -11,22 +11,23 @@
 #ifndef GAME_H
 #define GAME_H
 
-#define GAMEBOARD_ROWS_NUM 7
-#define GAMEBOARD_COLS_NUM 10
+#define GAMEBOARD_ROWS_NUM LEDMAT_ROWS_NUM
+// x2 Since board is across both screens.
+#define GAMEBOARD_COLS_NUM LEDMAT_COLS_NUM * 2
 
 // board_update shows only one row at a time so we require it to run
 // LEDMAT_ROWS_NUM times at the desired frame rate of 100 Hz.
-#define TINYGL_TEXT_SPEED 15 // number of letters per 10 seconds
+#define TINYGL_TEXT_SPEED 15 // Number of letters per 10 seconds
 #define DISP_ROWS_UPDATE_FREQ (500 * GAMEBOARD_ROWS_NUM)
 #define TINYGL_UPDATE_RATE (DISP_ROWS_UPDATE_FREQ)
 
 
 // Game modes. Can add more later if necessary
-enum GAMEMODE {
+typedef enum GAMEMODE {
     GAMEMODE_TITLE = 0,
     GAMEMODE_SNAKE,
     GAMEMODE_END
-};
+} GameMode;
 
 
 // Used to map the snake's position and the position of food.
@@ -50,13 +51,8 @@ typedef struct state_s State;
 
 // Game state passed around to all functions.
 struct state_s {
-    int gameMode;
-    bool isInControl;
-    bool isOtherBoardReady;
-    bool isReady;
-
-    // Sound
-    bool shouldBeep;
+    GameMode gameMode;  // Change behaviour based on current gamemode.
+    bool isInControl;  // Does this board control the snake?
 
     // 7 rows, 10 columns to be consistent with LED matrices.
     uint8_t gameBoard[GAMEBOARD_ROWS_NUM][GAMEBOARD_COLS_NUM];
@@ -65,12 +61,11 @@ struct state_s {
     uint8_t snakeLength;
     uint8_t snakeTrueLength;
     uint8_t snakeStartLength;
-    SnakeCell prevHeadValue;
+    SnakeCell prevHeadValue;  // Keep track while the head direction is being changed.
     Position snakeHead;
     Position snakeTail;
-    Position food;
 
-    // Initialise the game mode string as title screen string
+    // Handlers for transitions between game modes.
     void (* beginSnake)(State* state);
     void (* beginTitle)(State* state);
     void (* beginEnd)(State* state);

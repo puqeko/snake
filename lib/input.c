@@ -7,6 +7,7 @@
 // Edited 02-10-17
 
 #include <stdlib.h>
+#include <avr/io.h>
 #include "input.h"
 #include "navswitch.h"
 #include "delay.h"
@@ -76,8 +77,6 @@ static void spawn_food(State* state)
     } while (state->gameBoard[row][col] != SNAKE_CELL_EMPTY);
 
     state->gameBoard[row][col] = SNAKE_CELL_FOOD;
-    state->food.col = col;
-    state->food.row = row;
 }
 
 
@@ -130,10 +129,10 @@ void input_update_control_status(State* state)
 // to indicate which board is in control.
 {
     // For other side control.
-    // bool shouldHaveControl = (state->snakeHead.col >= GAMEBOARD_COLS_NUM / 2);
     bool shouldHaveControl = (state->snakeHead.col < GAMEBOARD_COLS_NUM / 2);
     if (!shouldHaveControl && state->isInControl) {
-        code_pass_control();
+        // Give other board control of the snake.
+        code_send(CODED_PASS_CONTROL);
         state->isInControl = false;
         led_set (LED1, false);
     }
@@ -218,18 +217,23 @@ void input_check_for_sync(State* state)
 // In begin mode, sync the boards by having them both signify they are read
 // by pressing the middle navswitch button.
 {
+    // Track the status of the other board and this board during the startup
+    // phase of the game.
+    static bool isOtherBoardReady = false;
+    static bool isThisBoardReady = false;
+
     if (navswitch_push_event_p(NAVSWITCH_PUSH)) {
 
-        state->isReady = true;  // This board is ready.
+        isThisBoardReady = true;  // This board is ready.
 
-        if (state->isOtherBoardReady) {
+        if (isOtherBoardReady) {
             code_send(CODED_READY);
             code_clear_messages();
 
             state->beginSnake(state);
 
             // Reset for next time.
-            state->isOtherBoardReady = state->isReady = false;
+            isOtherBoardReady = isThisBoardReady = false;
             init_as_slave_snake(state);
             led_set (LED1, false);
         } else {
@@ -245,16 +249,16 @@ void input_check_for_sync(State* state)
 
     // Message from other board.
     if (code_has_message() && code_get() == CODED_READY) {
-        state->isOtherBoardReady = true;
+        isOtherBoardReady = true;
 
-        if (state->isReady) {
+        if (isThisBoardReady) {
             code_clear_messages();
 
             //state->gameMode = GAMEMODE_SNAKE;
             state->beginSnake(state);
 
             // Reset for next time.
-            state->isOtherBoardReady = state->isReady = false;
+            isOtherBoardReady = isThisBoardReady = false;
             init_as_controller_snake(state);
         }
 
