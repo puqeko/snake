@@ -1,12 +1,13 @@
 // snake.c
 // Two player snake game played with two UCFK's
-// Snake behaviour.
+// Snake behaviour using the game board representation.
 //
 // Note: The snake is herin refered to as "Boris" the snake.
 //
 // By: Jozef Crosland jrc149
 // Thomas Morrison tjm195
 // Edited 01-10-17
+
 
 #include <stdlib.h>
 #include "snake.h"
@@ -15,7 +16,7 @@
 #include <avr/io.h>
 
 
-static SnakeCell prevHeadValue = SNAKE_CELL_UP;
+static SnakeCell prevHeadValue = SNAKE_CELL_EMPTY;
 
 
 static Position get_next_position(State* state, Position currHeadPos)
@@ -112,16 +113,16 @@ void snake_set_direction(State* state, SnakeCell newDirection)
     int8_t row = state->snakeHead.row;
     int8_t col = state->snakeHead.col;
 
-    // SnakeCell currentDirection = prevHeadValue;
+    SnakeCell currentDirection = prevHeadValue;
 
-    // if ((newDirection == SNAKE_CELL_LEFT && currentDirection == SNAKE_CELL_RIGHT) ||
-    //     (newDirection == SNAKE_CELL_RIGHT && currentDirection == SNAKE_CELL_LEFT) ||
-    //     (newDirection == SNAKE_CELL_DOWN && currentDirection == SNAKE_CELL_UP) ||
-    //     (newDirection == SNAKE_CELL_UP && currentDirection == SNAKE_CELL_DOWN)) {
+    if ((newDirection == SNAKE_CELL_LEFT && currentDirection == SNAKE_CELL_RIGHT) ||
+        (newDirection == SNAKE_CELL_RIGHT && currentDirection == SNAKE_CELL_LEFT) ||
+        (newDirection == SNAKE_CELL_DOWN && currentDirection == SNAKE_CELL_UP) ||
+        (newDirection == SNAKE_CELL_UP && currentDirection == SNAKE_CELL_DOWN)) {
 
-    //     // Ignore boris running back into himself.
-    //     return;
-    // }
+        // Ignore boris running back into himself.
+        return;
+    }
 
     state->gameBoard[row][col] = newDirection;
 }
@@ -147,6 +148,21 @@ void snake_init_spawner(void)
 // Seed psudorandom generator from timer value.
 {
     srand(TCNT1);
+}
+
+
+void snake_init(State* state)
+{
+    // Start at length 1 then increase to length 5.
+    Position start = {6, 7};
+    state->snakeHead = start;
+    state->snakeTail = start;
+    state->snakeLength = 5;
+    state->snakeTrueLength = 1;  // Make it grow to 5.
+    state->snakeStartLength = 5;
+
+    // Initalise snake mirrored for slave (oppisite to controller)
+    snake_set_direction(state, state->isInControl ? SNAKE_CELL_DOWN : SNAKE_CELL_UP);
 }
 
 

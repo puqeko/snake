@@ -6,13 +6,16 @@
 // Thomas Morrison tjm195
 // Edited 01-10-17
 
+
 #include "board.h"
 #include "pio.h"
 #include "ledmat.h"
 #include "tinygl.h"
 #include "font3x5_1.h"
 
+
 #define FOOD_DIMNESS_RATE 5  // Higher numbers are dimmer
+
 
 // Define PIO pins driving LED matrix rows.
 static const pio_t ledmatRows[] = {

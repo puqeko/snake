@@ -5,21 +5,23 @@
 // Thomas Morrison tjm195
 // Edited 02-10-17
 
+
 #include <stddef.h>
 #include "system.h"
 #include "task.h"
 
+
 #ifndef GAME_H
 #define GAME_H
+
 
 #define GAMEBOARD_ROWS_NUM LEDMAT_ROWS_NUM
 // x2 Since board is across both screens.
 #define GAMEBOARD_COLS_NUM (LEDMAT_COLS_NUM * 2)
-
 // board_update shows only one row at a time so we require it to run
-// LEDMAT_ROWS_NUM times at the desired frame rate of 100 Hz.
-#define TINYGL_TEXT_SPEED 15 // Number of letters per 10 seconds
+// LEDMAT_ROWS_NUM times at the desired frame rate of 500 Hz.
 #define DISP_ROWS_UPDATE_FREQ (500 * GAMEBOARD_ROWS_NUM)
+#define TINYGL_TEXT_SPEED 15 // Number of letters per 10 seconds.
 #define TINYGL_UPDATE_RATE (DISP_ROWS_UPDATE_FREQ)
 
 
@@ -48,9 +50,8 @@ typedef struct position_s {
 } Position;
 
 
-typedef struct state_s State;
-
 // Game state passed around to all functions.
+typedef struct state_s State;
 struct state_s {
     GameMode gameMode;  // Change behaviour based on current gamemode.
     bool isInControl;  // Does this board control the snake?
@@ -62,7 +63,6 @@ struct state_s {
     uint8_t snakeLength;
     uint8_t snakeTrueLength;
     uint8_t snakeStartLength;
-    SnakeCell prevHeadValue;  // Keep track while the head direction is being changed.
     Position snakeHead;
     Position snakeTail;
 
@@ -71,5 +71,6 @@ struct state_s {
     void (* beginTitle)(State* state);
     void (* beginEnd)(State* state);
 };
+
 
 #endif

@@ -1,16 +1,20 @@
 // actionbeep.c
+// Two player snake game played with two UCFKs.
 // Action beep module for initialising and playing a series of configurable beeps.
 //
 // By: Jozef Crosland jrc149
 // Thomas Morrison tjm195
 // Editied 15-10-2017
 
+
 #include "actionbeep.h"
 #include "pio.h"
+
 
 // Connect piezo tweeter to pins 1 and 5 of UCFK4 P1 connector for push-pull operation.
 #define PIEZO1_PIO PIO_DEFINE (PORT_D, 1) // changed from 4 so that the piezo speaker would fit
 #define PIEZO2_PIO PIO_DEFINE (PORT_D, 5) // NOTE: Don't use 6! Causes the game to fail to transition title>snake
+
 
 // Desired cycle period for one beep (milliseconds).
 #define CYCLE_PERIOD 100
@@ -18,6 +22,7 @@
 #define CYCLE_COUNT (uint16_t)((CYCLE_PERIOD / 1000.0) * (2 * TONE_FREQUENCY))
 #define FOOD_NUM_BEEPS 2  // Two beeps
 #define PUSH_NUM_BEEPS 1  // Single beep
+
 
 static uint16_t numBeepsInput = 0;  // Track the number of beeps still to go.
 

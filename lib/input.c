@@ -1,10 +1,11 @@
 // input.c
 // Two player snake game played with two UCFK's
-// Button controls
+// Button controls. Handle input from other board or navswitch.
 //
 // By: Jozef Crosland jrc149
 // Thomas Morrison tjm195
 // Edited 02-10-17
+
 
 #include "navswitch.h"
 #include "snake.h"
@@ -13,12 +14,14 @@
 
 
 void input_init(void)
+// Configure navswitch.
 {
     navswitch_init();
 }
 
 
 void input_update(void)
+// Call before using the other update functions.
 {
     navswitch_update();
 }
@@ -32,21 +35,15 @@ void input_update_internal(State* state)
         // north navswitch has been pressed so head updated to up
         snake_set_direction(state, SNAKE_CELL_UP);
         code_send(CODED_UP);
-    }
-    
-    if (navswitch_push_event_p(NAVSWITCH_SOUTH)) {
+    } else if (navswitch_push_event_p(NAVSWITCH_SOUTH)) {
         // south navswitch has been pressed so head updated to down
         snake_set_direction(state, SNAKE_CELL_DOWN);
         code_send(CODED_DOWN);
-    }
-    
-    if (navswitch_push_event_p(NAVSWITCH_WEST)) {
+    } else if (navswitch_push_event_p(NAVSWITCH_WEST)) {
         // west navswitch has been pressed so head updated to left
         snake_set_direction(state, SNAKE_CELL_LEFT);
         code_send(CODED_LEFT);
-    }
-    
-    if (navswitch_push_event_p(NAVSWITCH_EAST)) {
+    } else if (navswitch_push_event_p(NAVSWITCH_EAST)) {
         // east navswitch has been pressed so head updated to right
         snake_set_direction(state, SNAKE_CELL_RIGHT);
         code_send(CODED_RIGHT);

@@ -1,14 +1,18 @@
 // game.c
-// Two player snake game played with two UCFK's
+// Two player snake game played with two UCFK's.
+// Initalise the games tasks and setup the state object to be shared between
+// all the tasks.
 //
 // By: Jozef Crosland jrc149
 // Thomas Morrison tjm195
 // Edited 01-10-17
 
+
 #include "game.h"
 #include "task.h"
 #include "control.h"
 #include "actionbeep.h"
+
 
 #define SNAKE_UPDATE_RATE (TASK_RATE / 2)  // Snake moves at 2 Hz
 #define INPUT_UPDATE_RATE (TASK_RATE / 30)  // Check for input at 30 Hz

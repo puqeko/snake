@@ -1,10 +1,12 @@
 // input.c
 // Two player snake game played with two UCFK's
-// Button controls
+// Main game logic. Define the main tasks for the game and delegate between
+// the submodules.
 //
 // By: Jozef Crosland jrc149
 // Thomas Morrison tjm195
 // Edited 02-10-17
+
 
 #include "input.h"
 #include "led.h"
@@ -14,37 +16,12 @@
 #include "board.h"
 
 
-static void control_update_status(State* state)
-// Check if we need to give control to the other board. If so, then
-// update if we are in control and tell the other board. Signal LED
-// to indicate which board is in control.
-{
-    // For other side control.
-    bool shouldHaveControl = (state->snakeHead.col < GAMEBOARD_COLS_NUM / 2);
-    if (!shouldHaveControl && state->isInControl) {
-        // Give other board control of the snake.
-        code_send(CODED_PASS_CONTROL);
-        state->isInControl = false;
-        led_set (LED1, false);
-    }
-}
-
-
 static void init_as_controller_snake(State* state)
 // Initalise boris at one cell. He will grow from a length of 1 up to a length
 // of 5 after the game has started.
 {
     state->isInControl = true;
-    state->gameBoard[0][2] = SNAKE_CELL_DOWN;
-
-    Position head = {0, 2};
-    Position tail = {0, 2};
-    state->snakeHead = head;
-    state->snakeTail = tail;
-
-    state->snakeLength = 5;
-    state->snakeTrueLength = 1;  // Make it grow to 5.
-    state->snakeStartLength = 5;
+    snake_init(state);
 }
 
 
@@ -53,19 +30,7 @@ static void init_as_slave_snake(State* state)
 // model of boris on the other board.
 {
     state->isInControl = false;
-
-    // Initalise snake mirrored
-    state->gameBoard[6][7] = SNAKE_CELL_UP;
-
-    Position tail = {6, 7};
-    Position head = {6, 7};
-    state->snakeHead = head;
-    state->snakeTail = tail;
-
-    state->snakeLength = 5;
-    state->snakeTrueLength = 1;  // Make it grow to 5.
-    state->snakeStartLength = 5;
-
+    snake_init(state);
     snake_init_spawner();
     snake_spawn_food(state);
 }
@@ -199,7 +164,16 @@ void control_input_update_control(State* state)
         code_send(CODED_TICK);
     }
 
-    control_update_status(state);  // look ahead
+    // Check if we need to give control to the other board. If so, then
+    // update if we are in control and tell the other board. Signal LED
+    // to indicate which board is in control.
+    bool shouldHaveControl = (state->snakeHead.col < LEDMAT_COLS_NUM);
+    if (!shouldHaveControl && state->isInControl) {
+        // Give other board control of the snake.
+        code_send(CODED_PASS_CONTROL);
+        state->isInControl = false;
+        led_set (LED1, false);
+    }
 }
 
 

@@ -1,6 +1,7 @@
 // code.c
 // Two player snake game played with two UCFK's
-// Ir codings
+// IR communications between boards using queues to syncronise register
+// access and reduce collisions.
 //
 // Handle communication between boards using coded messages.
 // Ensures messages are not sent and receivd at the same time
@@ -11,8 +12,10 @@
 // Thomas Morrison tjm195
 // Edited 11-10-17
 
+
 #include "code.h"
 #include "ir_uart.h"
+
 
 // Message queue length.
 // Small since we don't expect many messages to back up.
@@ -71,11 +74,11 @@ static Code decode_ir(void)
 // CODED_NONE if no match is found.
 {
     static int numCodedOps = ARRAY_SIZE(validCodedOperations);
-    unsigned char ch = (unsigned char)ir_uart_getc();
+    int8_t ch = ir_uart_getc();
     int i;
     
     for (i = 0; i < numCodedOps; i++) {
-        if (ch == validCodedOperations[i]) {
+        if (ch == (int8_t)validCodedOperations[i]) {
             return validCodedOperations[i];
         }
     }
