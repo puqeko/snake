@@ -5,6 +5,7 @@
 // Thomas Morrison tjm195
 // Edited 02-10-17
 
+#include <stddef.h>
 #include "system.h"
 #include "task.h"
 

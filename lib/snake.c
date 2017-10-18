@@ -8,9 +8,15 @@
 // Thomas Morrison tjm195
 // Edited 01-10-17
 
+#include <stdlib.h>
 #include "snake.h"
 #include "code.h"
 #include "actionbeep.h"
+#include <avr/io.h>
+
+
+static SnakeCell prevHeadValue = SNAKE_CELL_UP;
+
 
 static Position get_next_position(State* state, Position currHeadPos)
 // Takes the head position of the snake and determines its next position depending on whether it's an
@@ -40,6 +46,7 @@ static bool will_self_intersect(State* state, Position nextHeadPos)
 {
     if (state->gameBoard[nextHeadPos.row][nextHeadPos.col] != SNAKE_CELL_EMPTY &&
         state->gameBoard[nextHeadPos.row][nextHeadPos.col] != SNAKE_CELL_FOOD) {
+        // Ignore case where the tail will move out of the way.
         if (nextHeadPos.row == state->snakeTail.row && nextHeadPos.col == state->snakeTail.col &&
             state->snakeLength == state->snakeTrueLength) {
             return false;
@@ -94,8 +101,67 @@ static void run_boris_run(State* state)
     state->gameBoard[head.row][head.col] = state->gameBoard[oldHead.row][oldHead.col];
 
     // Remember origonal head value between snake_update's
-    state->prevHeadValue = state->gameBoard[head.row][head.col];
+    prevHeadValue = state->gameBoard[head.row][head.col];
     state->snakeHead = head;
+}
+
+
+void snake_set_direction(State* state, SnakeCell newDirection)
+// Change the direction the snake will move for the next frame.
+{
+    int8_t row = state->snakeHead.row;
+    int8_t col = state->snakeHead.col;
+
+    // SnakeCell currentDirection = prevHeadValue;
+
+    // if ((newDirection == SNAKE_CELL_LEFT && currentDirection == SNAKE_CELL_RIGHT) ||
+    //     (newDirection == SNAKE_CELL_RIGHT && currentDirection == SNAKE_CELL_LEFT) ||
+    //     (newDirection == SNAKE_CELL_DOWN && currentDirection == SNAKE_CELL_UP) ||
+    //     (newDirection == SNAKE_CELL_UP && currentDirection == SNAKE_CELL_DOWN)) {
+
+    //     // Ignore boris running back into himself.
+    //     return;
+    // }
+
+    state->gameBoard[row][col] = newDirection;
+}
+
+
+void snake_spawn_food(State* state)
+// Randomly place food at an unoccupied cell.
+{
+    int row = 0;
+    int col = 0;
+
+    do {
+        row = rand() % 7;
+        col = rand() % 5;
+        // Keep trying until a legal position is found.
+    } while (state->gameBoard[row][col] != SNAKE_CELL_EMPTY);
+
+    state->gameBoard[row][col] = SNAKE_CELL_FOOD;
+}
+
+
+void snake_init_spawner(void)
+// Seed psudorandom generator from timer value.
+{
+    srand(TCNT1);
+}
+
+
+void snake_clear(State* state)
+// Set all cells in gameboard to empty.
+{
+    int i;
+    int j;
+
+    // Clear board.
+    for (i = 0; i < GAMEBOARD_ROWS_NUM; i++){
+        for (j = 0; j < GAMEBOARD_COLS_NUM; j++) {
+            state->gameBoard[i][j] = SNAKE_CELL_EMPTY;
+        }
+    }
 }
 
 

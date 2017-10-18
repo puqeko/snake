@@ -8,24 +8,19 @@
 
 #include "game.h"
 
-#ifndef GAME_DISPLAY_H
-#define GAME_DISPLAY_H
+#ifndef GAME_BOARD_H
+#define GAME_BOARD_H
 
-#define LEDMAT_ROWS_NUM 7
-
-// Configure LED display
+// Configure LED display.
 void board_init(void);
 
-// Show the snake on the LED matrix
-void board_update(State* state);
+// Show the snake on the LED matrix.
+void board_draw(State* state);
 
-// Changes game mode to snake. The state struct's gameMode string is not changed
-void change_state_to_snake(State* state);
+// Show text.
+void board_draw_text(void);
 
-// Changes gamemode to end and changes the string to "Game over!". Also resets strings and LED settings
-void change_state_to_end(State* state);
-
-// Reset to the back to the title screen. Also reset the game mode string and LED settings
-void reset_state_to_title(State* state);
+// Set text to scroll on screen.
+void board_set_text(char* text);
 
 #endif

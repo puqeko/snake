@@ -17,4 +17,14 @@ void snake_init(State* state);
 // Update the positions of the snake.
 void snake_update(State* state);
 
+// Create food at random position on this board.
+void snake_spawn_food(State* state);
+void snake_init_spawner(void);  // Call once before spawning.
+
+// Reset the board.
+void snake_clear(State* state);
+
+// Set the direction of travel for the next tick.
+void snake_set_direction(State* state, SnakeCell newDirection);
+
 #endif
