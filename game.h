@@ -14,7 +14,7 @@
 
 #define GAMEBOARD_ROWS_NUM LEDMAT_ROWS_NUM
 // x2 Since board is across both screens.
-#define GAMEBOARD_COLS_NUM LEDMAT_COLS_NUM * 2
+#define GAMEBOARD_COLS_NUM (LEDMAT_COLS_NUM * 2)
 
 // board_update shows only one row at a time so we require it to run
 // LEDMAT_ROWS_NUM times at the desired frame rate of 100 Hz.
