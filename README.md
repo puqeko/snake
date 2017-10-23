@@ -7,6 +7,8 @@ Embedded Systems Assignment for ENCE260, Semester 2 2017, University of Canterbu
 Code written by Jozef Crosland and Thomas Morrison. <br>
 Designed specifically for the UC Fun Kit 4.
 
+![2017-10-24 at 1 03 35 am](https://user-images.githubusercontent.com/12654833/31888145-5f6befce-b857-11e7-931d-9163cc4d452f.png)
+
 ## How to Play
 
 Snake has 3 modes to it, which cycle through during game play. These are the title
