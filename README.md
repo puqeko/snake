@@ -28,7 +28,8 @@ is reset at the beginning of a new game.
 
 ## Compilation Instructions
 
-The repository should be cloned to the assignment directory
+This repository must be placed in the assignment directory of the [ence260 repository](https://github.com/puqeko/ence260)
+to access dependancies
 
 ```
 ence260/assignment/team114/
