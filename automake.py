@@ -1,5 +1,5 @@
 # Automake
-# Generate a make file for a give target file
+# Generate a make file for a given target file
 
 # Usage:
 # python3 automake.py > Makefile
